@@ -201,6 +201,38 @@
     background:var(--o2);border-radius:8px;padding:5px 0;margin:-4px -4px 10px;letter-spacing:.5px;}
   .authnote b{color:var(--o2);font-weight:900;}
 
+  /* 주민번호 뒷자리 : 숫자 키패드는 뜨고, 화면에는 가려진다 */
+  .masked{-webkit-text-security:disc;}
+
+  /* 고지사항 큰 제목 */
+  .dutyhead{margin:20px 0 4px;font-size:20px;font-weight:900;color:var(--ink);
+    letter-spacing:-.6px;word-break:keep-all;}
+  .dutyhead i{font-style:normal;font-size:14.5px;font-weight:800;color:var(--o2);}
+
+  /* 건강보험공단 : 눈에 확 들어오는 초록 박스 */
+  .hirabox{display:flex;gap:11px;align-items:flex-start;margin-top:10px;
+    background:#E7F7F1;border:2.5px solid #0F9C78;border-radius:16px;
+    padding:15px 14px;box-shadow:0 4px 12px rgba(15,156,120,.20);
+    cursor:pointer;word-break:keep-all;transition:background .15s;}
+  .hirabox input{width:22px;height:22px;flex:none;margin:2px 0 0;accent-color:#0F9C78;}
+  .hirabox .t{flex:1;font-size:15.5px;font-weight:800;color:#0B5A45;line-height:1.5;}
+  .hirabox .s{display:block;margin-top:6px;font-size:13px;font-weight:600;
+    color:#4C7A6B;line-height:1.55;}
+  .hirabox.on{background:#0F9C78;border-color:#0B7C5E;}
+  .hirabox.on .t{color:#fff;}
+  .hirabox.on .s{color:rgba(255,255,255,.92);}
+
+  /* 고지사항 직접 적기 : 눌러지는 단추처럼 */
+  .dutybtn{width:100%;box-sizing:border-box;margin-top:10px;display:flex;
+    align-items:center;justify-content:center;gap:9px;word-break:keep-all;
+    border:2.5px solid var(--o2);background:#FFF3E6;color:var(--o2);
+    font-size:16px;font-weight:800;font-family:inherit;padding:16px 12px;
+    border-radius:16px;cursor:pointer;letter-spacing:-.3px;
+    box-shadow:0 3px 10px rgba(255,107,0,.15);transition:transform .1s;}
+  .dutybtn:active{transform:scale(.98);}
+  .dutybtn.open{background:var(--o2);color:#fff;box-shadow:none;}
+  .dutybtn .ar{font-size:12px;}
+
   .company{background:rgba(255,255,255,.94);border-radius:18px;padding:18px 18px 16px;
     margin-top:14px;font-size:12.5px;color:var(--sub);line-height:1.75;}
   .company .cname{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:8px;
@@ -315,15 +347,14 @@
     <input type="text" id="cname" placeholder="예: 홍길동" maxlength="20" autocomplete="name">
 
     <label class="fl" for="rrn1">주민등록번호</label>
-    <div class="two" style="align-items:center;">
-      <input type="tel" id="rrn1" inputmode="numeric" placeholder="앞 6자리"
-             maxlength="6" style="flex:1;text-align:center;letter-spacing:2px;">
-      <span style="flex:0 0 14px;text-align:center;color:#8A7263;font-weight:700;">-</span>
-      <input type="password" id="rrn2" inputmode="numeric" placeholder="뒤 7자리"
-             maxlength="7" style="flex:1;text-align:center;letter-spacing:4px;">
+    <div class="two" style="align-items:center;gap:7px;">
+      <input type="tel" id="rrn1" inputmode="numeric" pattern="[0-9]*" placeholder="앞 6자리"
+             maxlength="6" style="flex:6;min-width:0;text-align:center;letter-spacing:2px;">
+      <span style="flex:0 0 10px;text-align:center;color:#8A7263;font-weight:700;">-</span>
+      <input type="tel" id="rrn2" inputmode="numeric" pattern="[0-9]*" placeholder="뒤 7자리"
+             maxlength="7" class="masked"
+             style="flex:7;min-width:0;text-align:center;letter-spacing:2px;">
     </div>
-    <p class="hint" style="margin-top:6px;">뒷자리는 화면에 안 보이게 가려집니다.
-    보험료와 가입조건을 정확히 보기 위해서만 씁니다.</p>
 
     <label class="fl" for="phone">연락처</label>
     <div class="two">
@@ -384,39 +415,30 @@
   </div>
 
   <div class="card" id="dutyCard">
-    <h2><span class="num">3</span>건강 관련 확인 (알릴의무)</h2>
-    <p class="hint"><b>일일이 적지 않으셔도 됩니다.</b><br>
-    본인인증 한 번이면 병원 진료기록을 불러와 정확하게 확인해 드려요.</p>
+    <h2><span class="num">3</span>건강 관련 확인</h2>
 
-    <label class="fl"><span class="must">필수</span>최근 3개월 안에 병원 가신 적 있나요?</label>
-    <p style="margin:-2px 0 8px;font-size:12.5px;color:var(--sub);line-height:1.6;">
-      진료내역에는 아직 안 올라와 있을 수 있어 여쭙습니다.</p>
-    <div class="two" id="recent3">
-      <button type="button" class="ynb" data-v="없음">없어요</button>
-      <button type="button" class="ynb" data-v="있음">있어요</button>
-    </div>
-    <textarea id="recent3memo" rows="2" style="display:none;margin-top:9px;"
-      placeholder="언제, 어디서, 무슨 일로 다녀오셨는지 간단히" maxlength="200"></textarea>
-
-    <label class="privacy" style="margin-top:18px;">
+    <label class="privacy" style="margin-top:2px;">
       <input type="checkbox" id="agree">
       <span><span class="must">필수</span>보장분석 상담을 위한 개인정보(연락처·건강정보 포함) 수집·이용에 동의합니다. 상담 목적 외에는 사용하지 않으며, 상담 종료 후 파기합니다.</span>
     </label>
 
-        <p class="authnote"><span class="bell">꼭 확인해 주세요</span>
+    <p class="authnote"><span class="bell">꼭 확인해 주세요</span>
     건강 상태를 <b>사실대로 알리지 않으시면</b><br>
     보장을 받지 못하거나 계약이 해지될 수 있습니다.<br>
-    진료내역 확인이 이를 막는 가장 확실한 방법입니다.<br><br>
-    </p>
+    진료내역 확인이 이를 막는 가장 확실한 방법입니다.</p>
 
-    <label class="chk" id="hiraWrap" style="margin-top:12px;">
+    <p class="dutyhead">고지사항 <i>(알릴의무)</i></p>
+    <p class="hint" style="margin:0 0 2px;">아래 <b>둘 중 하나만</b> 하시면 됩니다.</p>
+
+    <label class="hirabox" id="hiraWrap">
       <input type="checkbox" id="hiraWant">
-      <span><b>건강보험공단 진료내역 확인하기</b>를 원하시면 체크해 주세요<br>
-      <span style="color:#8A7263;font-size:13px;">인증 문자 또는 카카오톡이 발송됩니다. 직접 적지 않으셔도 됩니다.</span></span>
+      <span class="t">건강보험공단 진료내역으로 확인할게요
+        <span class="s">인증 문자나 카카오톡이 갑니다. 직접 적지 않으셔도 됩니다.</span>
+      </span>
     </label>
 
-    <button type="button" id="dutyOpen" class="ynb"
-      style="width:100%;margin-top:10px;">직접 적을게요</button>
+    <button type="button" id="dutyOpen" class="dutybtn">
+      <span id="dutyOpenTxt">고지사항 직접 적기</span><span class="ar">&#9660;</span></button>
 
     <div id="dutyBox" style="display:none;margin-top:12px;">
       <p class="hint" style="margin-bottom:10px;">해당되는 것만 적어주시면 됩니다.
@@ -444,7 +466,7 @@
     </div>
 
     <a id="mohomBtn" class="mohombtn"
-       style="margin-top:10px;display:none;"
+       style="margin-top:14px;"
        href="https://myhom.me/gxrVHtMSbZbmBsuSD/contract"
        target="_blank" rel="noopener"><span class="box" id="mohomBox"></span><span class="must">필수</span><span id="mohomBtnTxt">보험조회 및 신청하기</span></a>
     <p class="hint" style="margin-top:8px;text-align:center;">
@@ -755,27 +777,9 @@ function 주소합치기(){
   return (z ? '(' + z + ') ' : '') + (a + (b ? ' ' + b : '')).trim();
 }
 
-/* ── 최근 3개월 병원 (모홈이 못 보는 기간을 고객이 메운다) ── */
-let 최근3='';
+/* 최근3개월 문항은 없앴다. 밑의 「고지사항 직접 적기」에서 같이 받는다. (2026-08-31) */
 let mohom창열림=false;
-$('recent3').addEventListener('click',e=>{
-  const b=e.target.closest('.ynb'); if(!b) return;
-  $('recent3').querySelectorAll('.ynb').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on'); 최근3=b.dataset.v;
-  const m=$('recent3memo');
-  m.style.display = (최근3==='있음') ? '' : 'none';
-  if(최근3==='있음'){ setTimeout(()=>m.focus({preventScroll:true}),150); }
-  else { m.value=''; }
-});
-
-function 최근3답(){
-  if(최근3==='있음'){
-    const t=$('recent3memo').value.trim();
-    return '있음' + (t ? ' - ' + t : ' (내용 안 적음)');
-  }
-  if(최근3==='없음'){ return '없음'; }
-  return '';
-}
+function 최근3답(){ return ''; }
 
 /* ══════════════════════════════════════════
    보내기
@@ -807,11 +811,6 @@ async function 신청보내기(모홈도열까){
     직업=$('jobEtc').value.trim();
     if(!직업){ alert('직업을 직접 적어주세요.'); $('jobEtc').focus(); return; }
     직업='기타 - '+직업;
-  }
-  if(!최근3){
-    alert('최근 3개월 안에 병원 가신 적이 있는지 골라주세요.');
-    $('recent3').scrollIntoView({behavior:'smooth',block:'center'});
-    return;
   }
   if(!$('agree').checked){
     alert('개인정보 수집·이용에 동의해 주세요.');
@@ -919,6 +918,19 @@ async function 신청보내기(모홈도열까){
   window.scrollTo(0,0);
 }
 
+/* ── 주민번호 : 숫자만 받고, 앞 6자리를 채우면 뒤 칸으로 넘어간다 ── */
+(function(){
+  var a = $('rrn1'), b = $('rrn2');
+  if(!a || !b) return;
+  [a,b].forEach(function(el){
+    el.addEventListener('input', function(){
+      var v = el.value.replace(/\D/g,'');
+      if(el.value !== v) el.value = v;
+      if(el === a && v.length === 6) b.focus();
+    });
+  });
+})();
+
 /* 큰 단추 = 신청 + 모홈 */
 let 모홈동의 = false;
 /* ── 「직접 적을게요」 누르면 문항이 펼쳐진다 ── */
@@ -928,7 +940,9 @@ let 모홈동의 = false;
   단추.addEventListener('click', function(){
     var 열림 = 상자.style.display !== 'none';
     상자.style.display = 열림 ? 'none' : '';
-    단추.textContent = 열림 ? '직접 적을게요' : '접기';
+    단추.classList.toggle('open', !열림);
+    $('dutyOpenTxt').textContent = 열림 ? '고지사항 직접 적기' : '접기';
+    단추.querySelector('.ar').textContent = 열림 ? '\u25BC' : '\u25B2';
     if(!열림){
       var 첫 = 상자.querySelector('textarea');
       if(첫) setTimeout(function(){ 첫.focus({preventScroll:true}); }, 120);
@@ -941,9 +955,14 @@ let 모홈동의 = false;
   var 체크 = $('hiraWant'), 상자 = $('dutyBox'), 단추 = $('dutyOpen');
   if(!체크) return;
   체크.addEventListener('change', function(){
+    $('hiraWrap').classList.toggle('on', 체크.checked);
     if(체크.checked && 상자){
       상자.style.display = 'none';
-      if(단추) 단추.textContent = '직접 적을게요';
+      if(단추){
+        단추.classList.remove('open');
+        $('dutyOpenTxt').textContent = '고지사항 직접 적기';
+        단추.querySelector('.ar').textContent = '\u25BC';
+      }
     }
   });
 })();
