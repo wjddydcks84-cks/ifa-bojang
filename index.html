@@ -486,54 +486,25 @@
   </div>
 
   <div class="card" id="dutyCard">
-    <h2><span class="num">3</span>고지사항 <i>(알릴의무)</i></h2>
+    <h2><span class="num">3</span>고지사항 <i>(알릴의무)</i>
+      <span class="must" style="margin:0;">필수</span></h2>
 
     <p class="authnote" style="margin-top:2px;"><span class="bell">꼭 확인해 주세요</span>
     건강 상태를 <b>사실대로 알리지 않으시면</b><br>
     보장을 받지 못하거나 계약이 해지될 수 있습니다.<br>
-    진료내역 확인이 이를 막는 가장 확실한 방법입니다.</p>
+    <b>건강보험공단 진료 내역으로 확인합니다.</b></p>
 
-    <p class="hint" style="margin:16px 0 2px;">아래 <b>둘 중 하나만</b> 하시면 됩니다.</p>
-
-    <label class="hirabox" id="hiraWrap">
-      <input type="checkbox" id="hiraWant">
-      <span class="t">건강보험공단 진료내역으로 확인할게요
-        <span class="s">인증 문자나 카카오톡이 갑니다. 직접 적지 않으셔도 됩니다.</span>
-      </span>
+    <label class="privacy" style="margin-top:16px;">
+      <span class="must" style="margin:0;flex:none;">필수</span>
+      <input type="checkbox" id="agree">
+      <span>보장분석 상담을 위한 개인정보(연락처·건강정보 포함) 수집·이용에 동의합니다.
+      상담 목적 외에는 쓰지 않으며, 상담이 끝나면 파기합니다.</span>
     </label>
-
-    <button type="button" id="dutyOpen" class="dutybtn">
-      <span id="dutyOpenTxt">고지사항 직접 적기</span><span class="ar">&#9660;</span></button>
-
-    <div id="dutyBox" style="display:none;margin-top:12px;">
-      <p class="hint" style="margin-bottom:10px;">해당되는 것만 적어주시면 됩니다.
-      없으면 비워두세요.</p>
-
-      <label class="fl">최근 <b>3개월</b> 안에 병원에 가셨거나 약을 드셨나요?</label>
-      <textarea class="dutyq" data-q="최근 3개월 병원·투약" rows="2"
-        placeholder="예: 6월에 감기로 동네의원" maxlength="200"></textarea>
-
-      <label class="fl" style="margin-top:12px;">최근 <b>3개월</b> 안에 계속 드시는 약이 있나요?</label>
-      <textarea class="dutyq" data-q="상시 복용약" rows="2"
-        placeholder="예: 혈압약 매일 복용" maxlength="200"></textarea>
-
-      <label class="fl" style="margin-top:12px;">최근 <b>1년</b> 안에 다시 검사받으라는 말을 들으셨나요?</label>
-      <textarea class="dutyq" data-q="1년 내 재검사" rows="2"
-        placeholder="예: 작년 건강검진에서 위 재검사 권유" maxlength="200"></textarea>
-
-      <label class="fl" style="margin-top:12px;">최근 <b>5년</b> 안에 입원하거나 수술하셨나요?</label>
-      <textarea class="dutyq" data-q="5년 내 입원·수술" rows="2"
-        placeholder="예: 2022년 무릎 수술, 3일 입원" maxlength="200"></textarea>
-
-      <label class="fl" style="margin-top:12px;">최근 <b>5년</b> 안에 큰 병(암·뇌·심장 등) 진단받으신 적 있나요?</label>
-      <textarea class="dutyq" data-q="5년 내 큰 병" rows="2"
-        placeholder="예: 2023년 갑상선암 진단" maxlength="200"></textarea>
-    </div>
 
     <a id="mohomBtn" class="mohombtn"
        style="margin-top:14px;"
        href="https://myhom.me/gxrVHtMSbZbmBsuSD/contract"
-       rel="noopener"><span class="tx"><b id="mohomBtnTxt">신청하기</b><i>누르시면 인증 화면이 이어서 나옵니다</i></span></a>
+       rel="noopener"><span class="tx"><b id="mohomBtnTxt">건강보험공단 진료내역 및 보험조회 신청하기</b><i>누르시면 인증 화면이 이어서 나옵니다</i></span></a>
 
     <p id="mohomWait" style="display:none;margin:14px 0 0;padding:15px 16px;
       background:#FFF3E0;border:2px solid #FFE0B2;border-radius:14px;
@@ -548,13 +519,6 @@
       <span>인증을 마쳤어요</span>
     </label>
 
-    <label class="privacy" style="margin-top:18px;padding-top:15px;
-      border-top:1px dashed #E4D8CC;">
-      <span class="must" style="margin:0;flex:none;">필수</span>
-      <input type="checkbox" id="agree">
-      <span>보장분석 상담을 위한 개인정보(연락처·건강정보 포함) 수집·이용에 동의합니다.
-      상담 목적 외에는 쓰지 않으며, 상담이 끝나면 파기합니다.</span>
-    </label>
   </div>
 
   <div class="company">
@@ -772,24 +736,9 @@ if(mohomDone){
 /* 우리는 「인증을 마쳤는지」를 알 수 없다. 모홈은 남의 사이트다.
    그러니 「했다」고 쓰지 말고 있는 그대로 적는다. 진짜 확인은 모홈에서. */
 function 알릴의무답변(){
-  /* ★ 텔레그램에는 「1번 아니오 2번 예」 같은 건 안 보낸다. (정용찬님 2026-08-31)
-     고객이 **직접 쓴 내용만** 한 덩어리로 모아서 보낸다. */
-  const 쓴것 = [];
-  document.querySelectorAll('.dutyq').forEach(function(t){
-    const v = (t.value || '').trim();
-    if (v) { 쓴것.push(t.getAttribute('data-q') + ': ' + v); }
-  });
-  const 셋 = [];
-  if (쓴것.length) { 셋.push(쓴것.join(' / ')); }
-
-  const h = document.getElementById('hiraWant');
-  if (h && h.checked) { 셋.push('건강보험공단 진료내역 확인 요청함'); }
-
-  const 뒤 = 최근3답();
-  if (뒤) { 셋.push('최근3개월 ' + 뒤); }
-
-  if (!셋.length) { 셋.push('적어주신 내용 없음'); }
-  return 셋.join(' / ');
+  /* 「직접 적기」와 「공단 체크」 갈래를 없앴다. (정용찬님 2026-08-31)
+     이제 모든 손님이 건강보험공단 진료내역으로 확인한다. */
+  return '건강보험공단 진료내역 확인 요청함';
 }
 
 /* ══════════════════════════════════════════
@@ -897,17 +846,6 @@ async function 신청보내기(모홈도열까){
     if(!직업){ alert('직업을 직접 적어주세요.'); $('jobEtc').focus(); return; }
     직업='기타 - '+직업;
   }
-  var 공단체크 = $('hiraWant') && $('hiraWant').checked;
-  var 직접적음 = false;
-  document.querySelectorAll('.dutyq').forEach(function(t){
-    if((t.value||'').trim()) 직접적음 = true;
-  });
-  if(!공단체크 && !직접적음){
-    alert('고지사항을 확인해 주세요.\n\n「건강보험공단 진료내역으로 확인할게요」를 체크하시거나,\n「고지사항 직접 적기」에 적어주세요.');
-    $('hiraWrap').scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
-
   if(!$('agree').checked){
     alert('개인정보 수집·이용에 동의해 주세요.');
     $('agree').scrollIntoView({behavior:'smooth',block:'center'});
@@ -999,20 +937,13 @@ async function 신청보내기(모홈도열까){
     + $('pfName').textContent + ' ' + $('pfTitle').textContent
     + '이(가)<br>직접 연락드리겠습니다.';
 
-  /* 남은 단계를 정한다.
-     공단 체크한 손님 : 진료내역 → 보험조회
-     직접 적은 손님   : 보험조회만 (고지는 이미 적어주셨다)          */
-  var 공단원함 = !!($('hiraWant') && $('hiraWant').checked);
-  단계들 = 공단원함
-    ? [{제목:'진료내역 확인해 주세요',
-        설명:'건강보험심사평가원 진료내역을 불러옵니다.',
-        주소:진료내역주소},
-       {제목:'가입하신 보험을 불러올게요',
-        설명:'카카오톡·문자 인증으로 확인합니다 (약 1분).',
-        주소:보험조회주소}]
-    : [{제목:'가입하신 보험을 불러올게요',
-        설명:'카카오톡·문자 인증으로 확인합니다 (약 1분).',
-        주소:보험조회주소}];
+  /* 이제 모든 손님이 둘 다 한다. 갈래가 없다. (2026-08-31) */
+  단계들 = [{제목:'진료내역 확인해 주세요',
+             설명:'건강보험심사평가원 진료내역을 불러옵니다.',
+             주소:진료내역주소},
+            {제목:'가입하신 보험을 불러올게요',
+             설명:'카카오톡·문자 인증으로 확인합니다 (약 1분).',
+             주소:보험조회주소}];
   지금단계 = 0;
   창문그리기();
 
@@ -1127,39 +1058,7 @@ var 진료내역주소 = 'https://myhom.me/landing/medical-history?cd=58880';
 
 /* 큰 단추 = 신청 + 모홈 */
 let 모홈동의 = false;
-/* ── 「직접 적을게요」 누르면 문항이 펼쳐진다 ── */
-(function(){
-  var 단추 = $('dutyOpen'), 상자 = $('dutyBox');
-  if(!단추 || !상자) return;
-  단추.addEventListener('click', function(){
-    var 열림 = 상자.style.display !== 'none';
-    상자.style.display = 열림 ? 'none' : '';
-    단추.classList.toggle('open', !열림);
-    $('dutyOpenTxt').textContent = 열림 ? '고지사항 직접 적기' : '접기';
-    단추.querySelector('.ar').textContent = 열림 ? '\u25BC' : '\u25B2';
-    if(!열림){
-      var 첫 = 상자.querySelector('textarea');
-      if(첫) setTimeout(function(){ 첫.focus({preventScroll:true}); }, 120);
-    }
-  });
-})();
 
-/* ── 진료내역 확인 체크하면, 직접 적는 칸은 접어둔다 ── */
-(function(){
-  var 체크 = $('hiraWant'), 상자 = $('dutyBox'), 단추 = $('dutyOpen');
-  if(!체크) return;
-  체크.addEventListener('change', function(){
-    $('hiraWrap').classList.toggle('on', 체크.checked);
-    if(체크.checked && 상자){
-      상자.style.display = 'none';
-      if(단추){
-        단추.classList.remove('open');
-        $('dutyOpenTxt').textContent = '고지사항 직접 적기';
-        단추.querySelector('.ar').textContent = '\u25BC';
-      }
-    }
-  });
-})();
 
 /* 한 번만 누르면 된다. (정용찬님 2026-08-31)
    예전에는 이 단추가 「필수 동의 체크박스(☐)」를 겸해서 두 번 눌러야 했다.
