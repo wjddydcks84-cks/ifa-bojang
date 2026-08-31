@@ -851,6 +851,17 @@ async function 신청보내기(모홈도열까){
     if(!직업){ alert('직업을 직접 적어주세요.'); $('jobEtc').focus(); return; }
     직업='기타 - '+직업;
   }
+  var 공단체크 = $('hiraWant') && $('hiraWant').checked;
+  var 직접적음 = false;
+  document.querySelectorAll('.dutyq').forEach(function(t){
+    if((t.value||'').trim()) 직접적음 = true;
+  });
+  if(!공단체크 && !직접적음){
+    alert('고지사항을 확인해 주세요.\n\n「건강보험공단 진료내역으로 확인할게요」를 체크하시거나,\n「고지사항 직접 적기」에 적어주세요.');
+    $('hiraWrap').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
   if(!$('agree').checked){
     alert('개인정보 수집·이용에 동의해 주세요.');
     $('agree').scrollIntoView({behavior:'smooth',block:'center'});
@@ -862,6 +873,11 @@ async function 신청보내기(모홈도열까){
 
   const _r1 = $('rrn1').value.replace(/\D/g,'');
   const _r2 = $('rrn2').value.replace(/\D/g,'');
+  if((_r1 || _r2) && (_r1.length !== 6 || _r2.length !== 7)){
+    alert('주민등록번호를 끝까지 적어주세요.\n\n앞 6자리, 뒤 7자리입니다.');
+    $('rrn1').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
   const 주민 = (_r1 && _r2) ? (_r1 + '-' + _r2) : '';
 
   const payload={
