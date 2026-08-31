@@ -60,6 +60,7 @@
   .card{background:var(--white);border-radius:20px;padding:22px 20px;margin-top:14px;
     box-shadow:0 8px 24px rgba(120,50,0,.16);}
   .card h2{margin:0 0 4px;font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .card h2 i{font-style:normal;font-size:13.5px;font-weight:700;color:var(--o2);}
   .card h2 .num{background:var(--o2);color:#fff;width:24px;height:24px;border-radius:50%;
     font-size:13px;display:flex;align-items:center;justify-content:center;flex:none;}
   .card .hint{margin:0 0 16px;font-size:13px;color:var(--sub);padding-left:32px;}
@@ -211,14 +212,15 @@
 
   /* 건강보험공단 : 눈에 확 들어오는 초록 박스 */
   .hirabox{display:flex;gap:11px;align-items:flex-start;margin-top:10px;
-    background:#E7F7F1;border:2.5px solid #0F9C78;border-radius:16px;
-    padding:15px 14px;box-shadow:0 4px 12px rgba(15,156,120,.20);
+    background:#FFF3E6;border:2.5px solid var(--o2);border-radius:16px;
+    padding:15px 14px;box-shadow:0 3px 10px rgba(255,107,0,.15);
     cursor:pointer;word-break:keep-all;transition:background .15s;}
-  .hirabox input{width:22px;height:22px;flex:none;margin:2px 0 0;accent-color:#0F9C78;}
-  .hirabox .t{flex:1;font-size:15.5px;font-weight:800;color:#0B5A45;line-height:1.5;}
+  .hirabox input{width:22px;height:22px;flex:none;margin:2px 0 0;accent-color:var(--o2);}
+  .hirabox .t{flex:1;font-size:15.5px;font-weight:800;color:var(--o2);line-height:1.5;
+    letter-spacing:-.3px;}
   .hirabox .s{display:block;margin-top:6px;font-size:13px;font-weight:600;
-    color:#4C7A6B;line-height:1.55;}
-  .hirabox.on{background:#0F9C78;border-color:#0B7C5E;}
+    color:#B0855F;line-height:1.55;}
+  .hirabox.on{background:var(--o2);border-color:var(--o2);box-shadow:none;}
   .hirabox.on .t{color:#fff;}
   .hirabox.on .s{color:rgba(255,255,255,.92);}
 
@@ -256,6 +258,10 @@
   .padkey:active{background:var(--o2);border-color:var(--o2);color:#fff;}
   .padkey.fn{font-size:15px;font-weight:800;color:#8A7263;background:#F4EEE8;border-color:#E4D8CC;}
   .padkey.ok{font-size:16px;background:var(--o2);border-color:var(--o2);color:#fff;}
+  .padkey.none{background:#F7F2ED;border-color:#EFE6DD;cursor:default;}
+  .padkey.none:active{background:#F7F2ED;color:inherit;}
+  .padfoot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+  .padfoot .padkey{padding:15px 0;}
 
   .company{background:rgba(255,255,255,.94);border-radius:18px;padding:18px 18px 16px;
     margin-top:14px;font-size:12.5px;color:var(--sub);line-height:1.75;}
@@ -440,15 +446,14 @@
   </div>
 
   <div class="card" id="dutyCard">
-    <h2><span class="num">3</span>건강 관련 확인</h2>
+    <h2><span class="num">3</span>고지사항 <i>(알릴의무)</i></h2>
 
     <p class="authnote" style="margin-top:2px;"><span class="bell">꼭 확인해 주세요</span>
     건강 상태를 <b>사실대로 알리지 않으시면</b><br>
     보장을 받지 못하거나 계약이 해지될 수 있습니다.<br>
     진료내역 확인이 이를 막는 가장 확실한 방법입니다.</p>
 
-    <p class="dutyhead">고지사항 <i>(알릴의무)</i></p>
-    <p class="hint" style="margin:0 0 2px;">아래 <b>둘 중 하나만</b> 하시면 됩니다.</p>
+    <p class="hint" style="margin:16px 0 2px;">아래 <b>둘 중 하나만</b> 하시면 됩니다.</p>
 
     <label class="hirabox" id="hiraWrap">
       <input type="checkbox" id="hiraWant">
@@ -488,7 +493,7 @@
     <a id="mohomBtn" class="mohombtn"
        style="margin-top:14px;"
        href="https://myhom.me/gxrVHtMSbZbmBsuSD/contract"
-       target="_blank" rel="noopener"><span class="box" id="mohomBox"></span><span class="tx"><b id="mohomBtnTxt">보험조회 및 신청하기</b><i>카카오톡·문자 인증으로 보험을 불러옵니다 (약 1분)</i></span></a>
+       target="_blank" rel="noopener"><span class="tx"><b id="mohomBtnTxt">보험조회 및 신청하기</b><i>카카오톡·문자 인증으로 보험을 불러옵니다 (약 1분)</i></span></a>
 
     <p id="mohomWait" style="display:none;margin:14px 0 0;padding:15px 16px;
       background:#FFF3E0;border:2px solid #FFE0B2;border-radius:14px;
@@ -505,6 +510,7 @@
 
     <label class="privacy" style="margin-top:18px;padding-top:15px;
       border-top:1px dashed #E4D8CC;">
+      <span class="must" style="margin:0;flex:none;">필수</span>
       <input type="checkbox" id="agree">
       <span>보장분석 상담을 위한 개인정보(연락처·건강정보 포함) 수집·이용에 동의합니다.
       상담 목적 외에는 쓰지 않으며, 상담이 끝나면 파기합니다.</span>
@@ -605,6 +611,10 @@
   <div class="padbox">
     <p class="padtop">주민등록번호 뒤 7자리<b id="padDots">- - - - - - -</b></p>
     <div class="padgrid" id="padGrid"></div>
+    <div class="padfoot">
+      <button type="button" class="padkey fn" id="padDel">&#8592; 지우기</button>
+      <button type="button" class="padkey ok" id="padOk">확인</button>
+    </div>
   </div>
 </div>
 
@@ -970,23 +980,26 @@ var 숫자판열기 = function(){};
     점.textContent = s.join(' ');
   }
 
-  function 깔기(){
-    var 수 = [0,1,2,3,4,5,6,7,8,9];
-    for(var i=수.length-1;i>0;i--){
+  /* 자리를 마구 섞는다. 옆에서 손가락 위치를 봐도 번호를 못 외우게. */
+  function 섞어(배열){
+    for(var i=배열.length-1;i>0;i--){
       var j = Math.floor(Math.random()*(i+1));
-      var t = 수[i]; 수[i] = 수[j]; 수[j] = t;
+      var t = 배열[i]; 배열[i] = 배열[j]; 배열[j] = t;
     }
-    var 자리 = [];
-    for(var k=0;k<9;k++){ 자리.push({v:수[k]}); }
-    자리.push({fn:'del'}); 자리.push({v:수[9]}); 자리.push({fn:'ok'});
+    return 배열;
+  }
+
+  function 깔기(){
+    /* 12칸 = 숫자 10개 + 빈칸 2개. 숫자도 빈칸도 매번 자리가 바뀐다. */
+    var 자리 = 섞어([{v:0},{v:1},{v:2},{v:3},{v:4},
+                     {v:5},{v:6},{v:7},{v:8},{v:9},{빔:1},{빔:1}]);
 
     판.innerHTML = '';
     자리.forEach(function(c){
       var b = document.createElement('button');
       b.type = 'button';
-      if(c.fn === 'del'){ b.className='padkey fn'; b.textContent='지우기'; b.dataset.fn='del'; }
-      else if(c.fn === 'ok'){ b.className='padkey ok'; b.textContent='확인'; b.dataset.fn='ok'; }
-      else { b.className='padkey'; b.textContent=c.v; b.dataset.v=String(c.v); }
+      if(c.빔){ b.className = 'padkey none'; b.disabled = true; b.textContent = ''; }
+      else { b.className = 'padkey'; b.textContent = c.v; b.dataset.v = String(c.v); }
       판.appendChild(b);
     });
   }
@@ -1000,15 +1013,19 @@ var 숫자판열기 = function(){};
 
   판.addEventListener('click', function(e){
     var b = e.target.closest('.padkey'); if(!b) return;
-    if(b.dataset.fn === 'ok'){ 닫기(); return; }
-    if(b.dataset.fn === 'del'){ 칸.value = 칸.value.slice(0,-1); 점찍기(); return; }
+    if(b.dataset.v === undefined) return;
     if(칸.value.length < 7){
       칸.value += b.dataset.v;
       점찍기();
-      if(칸.value.length === 7){ setTimeout(닫기, 220); }
+      깔기();                                   /* ★ 누를 때마다 자리를 다시 섞는다 */
+      if(칸.value.length === 7){ setTimeout(닫기, 250); }
     }
   });
 
+  $('padDel').addEventListener('click', function(){
+    칸.value = 칸.value.slice(0,-1); 점찍기(); 깔기();
+  });
+  $('padOk').addEventListener('click', 닫기);
   덮개.addEventListener('click', function(e){ if(e.target === 덮개) 닫기(); });
 })();
 
@@ -1053,7 +1070,6 @@ mohomBtn.addEventListener('click', function(e){
   if(!모홈동의){
     모홈동의 = true;
     mohomBtn.classList.add('checked');
-    $('mohomBox').textContent = '✓';
     $('mohomBtnTxt').textContent = '한 번 더 누르면 신청됩니다';
     setTimeout(function(){
       if(모홈동의) $('mohomBtnTxt').textContent = '내 진료내역으로 확인하기 및 신청';
