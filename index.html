@@ -263,6 +263,23 @@
   .padfoot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
   .padfoot .padkey{padding:15px 0;}
 
+  /* 완료 화면 : 남은 단계 단추 */
+  .stepbtn{display:flex;align-items:center;gap:12px;margin-top:10px;
+    padding:15px 14px;border-radius:16px;text-decoration:none;
+    background:linear-gradient(135deg,#FF6B00,#FF8F3C);color:#fff;
+    box-shadow:0 4px 14px rgba(255,107,0,.28);word-break:keep-all;}
+  .stepbtn .no{flex:none;width:26px;height:26px;border-radius:50%;
+    background:rgba(255,255,255,.25);display:flex;align-items:center;
+    justify-content:center;font-size:14px;font-weight:900;}
+  .stepbtn .tx{flex:1;display:flex;flex-direction:column;gap:3px;line-height:1.35;}
+  .stepbtn .tx b{font-size:16px;font-weight:900;letter-spacing:-.4px;}
+  .stepbtn .tx i{font-style:normal;font-size:12.5px;font-weight:600;opacity:.92;}
+  .stepbtn .tick{flex:none;font-size:20px;font-weight:900;opacity:0;}
+  .stepbtn:active{transform:translateY(1px);}
+  .stepbtn.done{background:#0F6E56;box-shadow:none;}
+  .stepbtn.done .tick{opacity:1;}
+  .stepbtn.done .tx i{opacity:.85;}
+
   .company{background:rgba(255,255,255,.94);border-radius:18px;padding:18px 18px 16px;
     margin-top:14px;font-size:12.5px;color:var(--sub);line-height:1.75;}
   .company .cname{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:8px;
@@ -539,16 +556,35 @@
     <h2>신청이 접수되었어요!</h2>
     <p id="doneMsg">확인하는 대로 담당 컨설턴트가<br>직접 연락드리겠습니다. 감사합니다.</p>
 
-    <div id="doneMohom" style="display:none;margin-top:24px;padding-top:22px;
+    <div id="doneMohom" style="margin-top:24px;padding-top:22px;
       border-top:2px solid var(--o3);text-align:left;">
-      <p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:var(--ink);font-weight:700;">
-        마지막으로 <span style="color:var(--o2);">진료내역 확인</span>만 남았습니다.</p>
-      <p style="margin:0 0 14px;font-size:13.5px;line-height:1.7;color:var(--sub);">
-        본인인증 한 번이면 끝납니다. 이걸 마치셔야
-        보험료와 가입 조건을 정확하게 안내드릴 수 있습니다.</p>
-      <a id="doneMohomBtn" class="mohombtn"
+      <p style="margin:0 0 6px;font-size:16.5px;line-height:1.6;color:var(--ink);
+        font-weight:900;word-break:keep-all;">
+        아직 <span style="color:var(--o2);">인증</span>이 남았습니다.</p>
+      <p id="doneNote" style="margin:0 0 14px;font-size:13.5px;line-height:1.7;
+        color:var(--sub);word-break:keep-all;">
+        아래를 순서대로 눌러주세요. 새 창이 열립니다.</p>
+
+      <a id="doneStep1" class="stepbtn"
+         href="https://myhom.me/gxrVHtMSbZbmBsuSD/contract"
+         target="_blank" rel="noopener">
+        <span class="no">1</span>
+        <span class="tx"><b>보험조회 하러 가기</b>
+          <i>가입하신 보험을 불러옵니다 (약 1분)</i></span>
+        <span class="tick">&#10003;</span></a>
+
+      <a id="doneStep2" class="stepbtn" style="display:none;"
          href="https://myhom.me/landing/medical-history?cd=58880"
-         target="_blank" rel="noopener">내 진료내역으로 확인하기</a>
+         target="_blank" rel="noopener">
+        <span class="no">2</span>
+        <span class="tx"><b>진료내역 확인하러 가기</b>
+          <i>건강보험공단 진료내역을 불러옵니다</i></span>
+        <span class="tick">&#10003;</span></a>
+
+      <p id="doneAllDone" style="display:none;margin:16px 0 0;padding:14px;
+        background:#E7F7F1;border:2px solid #0F9C78;border-radius:14px;
+        text-align:center;font-size:15px;font-weight:800;color:#0B5A45;">
+        다 하셨습니다. 곧 연락드리겠습니다!</p>
     </div>
   </div>
 </div>
@@ -899,7 +935,12 @@ async function 신청보내기(모홈도열까){
     신청시각: new Date().toLocaleString('ko-KR')
   };
 
-  /* ★ 팝업 차단을 피하려면 누른 그 순간에 열어야 한다 */
+  /* ★ 신청할 때 창을 열지 않는다. (2026-08-31)
+     폰에서는 새 창이 폼을 덮어버려서, 손님이 인증만 하고 돌아오지 않았다.
+     이제 신청을 먼저 끝내고, 완료 화면에서 손님이 직접 누르게 한다.
+     완료 화면의 단추는 손님이 진짜로 누르는 것이라 팝업 차단도 안 걸린다. */
+  /* 창은 누른 그 순간에 열어야 한다. 기다렸다 열면 팝업으로 막힌다.
+     새 탭이라 폼은 뒤에 그대로 살아 있다. 손님은 돌아올 수 있다. */
   let 모홈창 = null;
   if(모홈도열까){
     try{ 모홈창 = window.open(mohomBtn.href, 'mohom'); }catch(e){ 모홈창 = null; }
@@ -907,8 +948,6 @@ async function 신청보내기(모홈도열까){
     mohom창열림 = !!모홈창;
     mohom누른때 = new Date().toLocaleString('ko-KR');
     payload.알릴의무 = 알릴의무답변();
-    $('mohomWait').style.display = '';
-    if(!모홈창){ mohomDoneWrap.style.display = ''; }
   }
 
   const btn = mohomBtn;
@@ -952,26 +991,48 @@ async function 신청보내기(모홈도열까){
 
   await new Promise(r=>setTimeout(r,1200));
 
-  if(모홈도열까){
-    /* 창이 안 열렸으면 완료 화면에서 다시 누를 수 있게 해준다 */
-    $('doneMohom').style.display = 모홈창 ? 'none' : '';
-    if(모홈창){
-      $('doneMsg').innerHTML = nm + '님, 감사합니다!<br>'
-        + '<b style="color:var(--o2)">모홈 창에서 본인인증을 마쳐주세요.</b><br>'
-        + '확인하는 대로 ' + $('pfName').textContent + ' '
-        + $('pfTitle').textContent + '이(가) 연락드리겠습니다.';
-      $('form').style.display='none';
-      $('done').style.display='block';
-      window.scrollTo(0,0);
-      return;
-    }
+  $('doneMsg').innerHTML = nm + '님, 감사합니다!<br>확인하는 대로 '
+    + $('pfName').textContent + ' ' + $('pfTitle').textContent
+    + '이(가)<br>직접 연락드리겠습니다.';
+
+  /* 진료내역은 「건강보험공단」을 체크한 손님한테만 보여준다.
+     직접 적은 손님은 보험조회만 하면 끝이다. (정용찬님 2026-08-31) */
+  var 공단원함 = $('hiraWant') && $('hiraWant').checked;
+  $('doneStep2').style.display = 공단원함 ? '' : 'none';
+
+  if(모홈창){ $('doneStep1').classList.add('done'); }
+
+  if(공단원함){
+    $('doneNote').innerHTML = '보험조회 창이 열렸습니다. 인증을 마치신 뒤 '
+      + '<b>이 화면으로 돌아와 ②번을 눌러주세요.</b>';
+  }else if(모홈창){
+    $('doneNote').innerHTML = '보험조회 창에서 <b>인증만 마치시면 끝납니다.</b>';
+    $('doneAllDone').style.display = '';
+  }else{
+    $('doneNote').innerHTML = '아래를 눌러 <b>인증을 마쳐주세요.</b> 새 창이 열립니다.';
   }
 
-  $('doneMsg').innerHTML=nm+'님, 감사합니다!<br>확인하는 대로 '+$('pfName').textContent+' '+$('pfTitle').textContent+'이(가)<br>직접 연락드리겠습니다.';
   $('form').style.display='none';
   $('done').style.display='block';
   window.scrollTo(0,0);
 }
+
+/* ── 완료 화면 : 누른 단계는 초록으로 바뀐다 ── */
+(function(){
+  var 단계 = [$('doneStep1'), $('doneStep2')];
+  단계.forEach(function(a){
+    if(!a) return;
+    a.addEventListener('click', function(){
+      a.classList.add('done');
+      setTimeout(function(){
+        var 남음 = 단계.some(function(x){
+          return x && x.style.display !== 'none' && !x.classList.contains('done');
+        });
+        if(!남음) $('doneAllDone').style.display = '';
+      }, 300);
+    });
+  });
+})();
 
 /* ── 주민번호 앞칸 : 숫자만. 6자리 채우면 숫자판이 뜬다 ── */
 (function(){
@@ -1088,7 +1149,7 @@ mohomBtn.addEventListener('click', function(e){
     mohomBtn.classList.add('checked');
     $('mohomBtnTxt').textContent = '한 번 더 누르면 신청됩니다';
     setTimeout(function(){
-      if(모홈동의) $('mohomBtnTxt').textContent = '내 진료내역으로 확인하기 및 신청';
+      if(모홈동의) $('mohomBtnTxt').textContent = '보험조회 및 신청하기';
     }, 1800);
     return;
   }
