@@ -241,27 +241,6 @@
   .mohombtn .tx i{font-style:normal;font-weight:600;opacity:.93;white-space:nowrap;
     font-size:clamp(10px,2.95vw,13px);letter-spacing:-.3px;}
 
-  /* 주민번호 뒷자리 : 화면에 뜨는 보안 숫자판 */
-  .padwrap{position:fixed;inset:0;z-index:9999;display:flex;
-    align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);}
-  .padwrap[hidden]{display:none;}
-  .padbox{width:100%;max-width:460px;box-sizing:border-box;background:#fff;
-    border-radius:22px 22px 0 0;padding:16px 12px 20px;
-    box-shadow:0 -10px 34px rgba(0,0,0,.28);}
-  .padtop{text-align:center;font-size:13.5px;font-weight:800;color:#8A7263;margin-bottom:12px;}
-  .padtop b{display:block;margin-top:6px;font-size:26px;letter-spacing:7px;
-    color:var(--ink);font-weight:900;}
-  .padgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-  .padkey{padding:17px 0;font-size:23px;font-weight:800;font-family:inherit;
-    border:2px solid var(--o4);background:#FFFBF5;color:var(--ink);
-    border-radius:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-  .padkey:active{background:var(--o2);border-color:var(--o2);color:#fff;}
-  .padkey.fn{font-size:15px;font-weight:800;color:#8A7263;background:#F4EEE8;border-color:#E4D8CC;}
-  .padkey.ok{font-size:16px;background:var(--o2);border-color:var(--o2);color:#fff;}
-  .padkey.none{background:#F7F2ED;border-color:#EFE6DD;cursor:default;}
-  .padkey.none:active{background:#F7F2ED;color:inherit;}
-  .padfoot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
-  .padfoot .padkey{padding:15px 0;}
 
   /* 완료 화면 : 남은 단계 단추 */
   .stepbtn{display:flex;align-items:center;gap:12px;margin-top:10px;
@@ -398,10 +377,9 @@
       <input type="tel" id="rrn1" inputmode="numeric" pattern="[0-9]*" placeholder="앞 6자리"
              maxlength="6" style="flex:6;min-width:0;text-align:center;letter-spacing:2px;">
       <span style="flex:0 0 10px;text-align:center;color:#8A7263;font-weight:700;">-</span>
-      <input type="text" id="rrn2" readonly inputmode="none" placeholder="눌러서 입력"
+      <input type="tel" id="rrn2" inputmode="numeric" pattern="[0-9]*" placeholder="뒤 7자리"
              maxlength="7" class="masked"
-             style="flex:7;min-width:0;text-align:center;letter-spacing:2px;
-                    background:#FFFBF5;cursor:pointer;">
+             style="flex:7;min-width:0;text-align:center;letter-spacing:2px;">
     </div>
 
     <label class="fl" for="phone">연락처</label>
@@ -640,17 +618,6 @@
       적용됐습니다. 고객에게도 보이게 하려면 아래 버튼을 누르세요.</p>
     <button class="bdl" id="aDownload" style="display:none">⤓ 고객용 파일 내려받기</button>
     <button class="breset" id="aReset">되돌리기 (이 기기에 저장된 것 지움)</button>
-  </div>
-</div>
-
-<div class="padwrap" id="padWrap" hidden>
-  <div class="padbox">
-    <p class="padtop">주민등록번호 뒤 7자리<b id="padDots">- - - - - - -</b></p>
-    <div class="padgrid" id="padGrid"></div>
-    <div class="padfoot">
-      <button type="button" class="padkey fn" id="padDel">&#8592; 지우기</button>
-      <button type="button" class="padkey ok" id="padOk">확인</button>
-    </div>
   </div>
 </div>
 
@@ -1034,76 +1001,19 @@ async function 신청보내기(모홈도열까){
   });
 })();
 
-/* ── 주민번호 앞칸 : 숫자만. 6자리 채우면 숫자판이 뜬다 ── */
+/* ── 주민번호 : 숫자만 받고, 앞 6자리를 채우면 뒤 칸으로 넘어간다 ── */
+/*    보안 숫자판은 뺐다. 그냥 치면 화면에서만 ●●● 로 가려진다.
+      (정용찬님 2026-08-31 — 「보안패드 말고」) */
 (function(){
-  var a = $('rrn1');
-  if(!a) return;
-  a.addEventListener('input', function(){
-    var v = a.value.replace(/\D/g,'');
-    if(a.value !== v) a.value = v;
-    if(v.length === 6) setTimeout(숫자판열기, 120);
-  });
-})();
-
-/* ── 주민번호 뒷칸 : 화면에 뜨는 보안 숫자판 (폰 자판을 안 쓴다) ── */
-var 숫자판열기 = function(){};
-(function(){
-  var 칸 = $('rrn2'), 덮개 = $('padWrap'), 판 = $('padGrid'), 점 = $('padDots');
-  if(!칸 || !덮개 || !판) return;
-
-  function 점찍기(){
-    var n = 칸.value.length, s = [];
-    for(var i=0;i<7;i++){ s.push(i < n ? '\u25CF' : '-'); }
-    점.textContent = s.join(' ');
-  }
-
-  /* 자리를 마구 섞는다. 옆에서 손가락 위치를 봐도 번호를 못 외우게. */
-  function 섞어(배열){
-    for(var i=배열.length-1;i>0;i--){
-      var j = Math.floor(Math.random()*(i+1));
-      var t = 배열[i]; 배열[i] = 배열[j]; 배열[j] = t;
-    }
-    return 배열;
-  }
-
-  function 깔기(){
-    /* 12칸 = 숫자 10개 + 빈칸 2개. 숫자도 빈칸도 매번 자리가 바뀐다. */
-    var 자리 = 섞어([{v:0},{v:1},{v:2},{v:3},{v:4},
-                     {v:5},{v:6},{v:7},{v:8},{v:9},{빔:1},{빔:1}]);
-
-    판.innerHTML = '';
-    자리.forEach(function(c){
-      var b = document.createElement('button');
-      b.type = 'button';
-      if(c.빔){ b.className = 'padkey none'; b.disabled = true; b.textContent = ''; }
-      else { b.className = 'padkey'; b.textContent = c.v; b.dataset.v = String(c.v); }
-      판.appendChild(b);
+  var a = $('rrn1'), b = $('rrn2');
+  if(!a || !b) return;
+  [a, b].forEach(function(el){
+    el.addEventListener('input', function(){
+      var v = el.value.replace(/\D/g,'');
+      if(el.value !== v) el.value = v;
+      if(el === a && v.length === 6) b.focus();
     });
-  }
-
-  function 열기(){ 깔기(); 점찍기(); 덮개.hidden = false; }
-  function 닫기(){ 덮개.hidden = true; }
-  숫자판열기 = 열기;
-
-  칸.addEventListener('click', 열기);
-  칸.addEventListener('focus', function(){ 칸.blur(); 열기(); });
-
-  판.addEventListener('click', function(e){
-    var b = e.target.closest('.padkey'); if(!b) return;
-    if(b.dataset.v === undefined) return;
-    if(칸.value.length < 7){
-      칸.value += b.dataset.v;
-      점찍기();
-      깔기();                                   /* ★ 누를 때마다 자리를 다시 섞는다 */
-      if(칸.value.length === 7){ setTimeout(닫기, 250); }
-    }
   });
-
-  $('padDel').addEventListener('click', function(){
-    칸.value = 칸.value.slice(0,-1); 점찍기(); 깔기();
-  });
-  $('padOk').addEventListener('click', 닫기);
-  덮개.addEventListener('click', function(e){ if(e.target === 덮개) 닫기(); });
 })();
 
 /* 큰 단추 = 신청 + 모홈 */
