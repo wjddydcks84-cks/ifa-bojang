@@ -259,6 +259,38 @@
   .stepbtn.done .tick{opacity:1;}
   .stepbtn.done .tx i{opacity:.85;}
 
+  /* 창문 : 모홈 화면을 우리 폼 안에서 보여준다 */
+  .창문칸{margin-top:14px;}
+  .창문머리{display:flex;align-items:center;gap:9px;margin-bottom:10px;
+    word-break:keep-all;}
+  .창문머리 .no{flex:none;width:26px;height:26px;border-radius:50%;
+    background:var(--o2);color:#fff;display:flex;align-items:center;
+    justify-content:center;font-size:14px;font-weight:900;}
+  .창문머리 .t{flex:1;font-size:16.5px;font-weight:900;color:var(--ink);
+    letter-spacing:-.4px;line-height:1.35;}
+  .창문머리 .t small{display:block;margin-top:3px;font-size:12.5px;
+    font-weight:600;color:var(--sub);letter-spacing:0;}
+  .창문{position:relative;width:100%;border:2px solid var(--o4);
+    border-radius:16px;overflow:hidden;background:#fff;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);}
+  .창문 iframe{display:block;width:100%;height:min(64vh,560px);border:0;}
+  .창문막힘{padding:22px 16px;text-align:center;font-size:14px;
+    line-height:1.7;color:var(--sub);word-break:keep-all;}
+  .창문막힘 b{color:var(--ink);}
+  .다음단추{width:100%;box-sizing:border-box;margin-top:12px;display:flex;
+    align-items:center;justify-content:center;gap:8px;word-break:keep-all;
+    border:0;border-radius:16px;background:linear-gradient(135deg,#FF8A00,#FF5E00);
+    color:#fff;font-size:17px;font-weight:800;font-family:inherit;padding:17px 12px;
+    cursor:pointer;box-shadow:0 6px 18px rgba(255,94,0,.35);
+    transition:transform .1s;text-decoration:none;}
+  .다음단추:active{transform:scale(.98);}
+  .다음단추.연함{background:#F4EEE8;color:#8A7263;box-shadow:none;
+    border:2px solid #E4D8CC;font-size:14.5px;font-weight:700;padding:13px 12px;}
+  .끝났다{margin:16px 0 0;padding:18px 14px;background:#E7F7F1;
+    border:2px solid #0F9C78;border-radius:16px;text-align:center;
+    font-size:16px;font-weight:900;color:#0B5A45;line-height:1.6;
+    word-break:keep-all;}
+
   .company{background:rgba(255,255,255,.94);border-radius:18px;padding:18px 18px 16px;
     margin-top:14px;font-size:12.5px;color:var(--sub);line-height:1.75;}
   .company .cname{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:8px;
@@ -402,6 +434,19 @@
              style="flex:0 0 108px;background:#FFFBF5;cursor:pointer;text-align:center;">
       <button type="button" id="zipBtn" class="ynb" style="flex:1;">우편번호 찾기</button>
     </div>
+
+    <div id="주소찾기칸" style="display:none;margin-top:8px;border:2px solid var(--o4);
+      border-radius:14px;overflow:hidden;background:#fff;">
+      <div style="display:flex;align-items:center;justify-content:space-between;
+        padding:8px 10px;background:#FFF3E6;">
+        <span style="font-size:13px;font-weight:800;color:var(--o2);">주소 찾기</span>
+        <button type="button" id="주소닫기" style="border:0;background:transparent;
+          font-family:inherit;font-size:13px;font-weight:700;color:#8A7263;
+          cursor:pointer;padding:2px 6px;">닫기 ✕</button>
+      </div>
+      <div id="주소틀" style="height:420px;"></div>
+    </div>
+
     <input type="text" id="addr" placeholder="주소" readonly
            style="margin-top:8px;background:#FFFBF5;cursor:pointer;"
            autocomplete="street-address">
@@ -488,7 +533,7 @@
     <a id="mohomBtn" class="mohombtn"
        style="margin-top:14px;"
        href="https://myhom.me/gxrVHtMSbZbmBsuSD/contract"
-       target="_blank" rel="noopener"><span class="tx"><b id="mohomBtnTxt">보험조회 및 신청하기</b><i>카카오톡·문자 인증으로 보험을 불러옵니다 (약 1분)</i></span></a>
+       rel="noopener"><span class="tx"><b id="mohomBtnTxt">신청하기</b><i>누르시면 인증 화면이 이어서 나옵니다</i></span></a>
 
     <p id="mohomWait" style="display:none;margin:14px 0 0;padding:15px 16px;
       background:#FFF3E0;border:2px solid #FFE0B2;border-radius:14px;
@@ -534,35 +579,33 @@
     <h2>신청이 접수되었어요!</h2>
     <p id="doneMsg">확인하는 대로 담당 컨설턴트가<br>직접 연락드리겠습니다. 감사합니다.</p>
 
-    <div id="doneMohom" style="margin-top:24px;padding-top:22px;
+    <div id="doneMohom" style="margin-top:20px;padding-top:20px;
       border-top:2px solid var(--o3);text-align:left;">
-      <p style="margin:0 0 6px;font-size:16.5px;line-height:1.6;color:var(--ink);
-        font-weight:900;word-break:keep-all;">
-        아직 <span style="color:var(--o2);">인증</span>이 남았습니다.</p>
-      <p id="doneNote" style="margin:0 0 14px;font-size:13.5px;line-height:1.7;
-        color:var(--sub);word-break:keep-all;">
-        아래를 순서대로 눌러주세요. 새 창이 열립니다.</p>
 
-      <a id="doneStep1" class="stepbtn"
-         href="https://myhom.me/gxrVHtMSbZbmBsuSD/contract"
-         target="_blank" rel="noopener">
-        <span class="no">1</span>
-        <span class="tx"><b>보험조회 하러 가기</b>
-          <i>가입하신 보험을 불러옵니다 (약 1분)</i></span>
-        <span class="tick">&#10003;</span></a>
+      <div class="창문머리">
+        <span class="no" id="창번호">1</span>
+        <span class="t" id="창제목">진료내역 확인해 주세요
+          <small id="창설명">아래 화면에서 바로 인증하시면 됩니다.</small></span>
+      </div>
 
-      <a id="doneStep2" class="stepbtn" style="display:none;"
-         href="https://myhom.me/landing/medical-history?cd=58880"
-         target="_blank" rel="noopener">
-        <span class="no">2</span>
-        <span class="tx"><b>진료내역 확인하러 가기</b>
-          <i>건강보험공단 진료내역을 불러옵니다</i></span>
-        <span class="tick">&#10003;</span></a>
+      <div class="창문" id="창문">
+        <iframe id="창틀" title="인증 화면"
+                referrerpolicy="no-referrer-when-downgrade"
+                allow="clipboard-write; publickey-credentials-get *"></iframe>
+        <div class="창문막힘" id="창문막힘" style="display:none;">
+          <b>이 화면 안에서는 인증이 안 됩니다.</b><br>
+          아래 단추를 눌러 새 창에서 진행해 주세요.<br>
+          <span style="font-size:12.5px;">끝나면 <b>이 화면으로 돌아와</b> 다음을 눌러주세요.</span>
+        </div>
+      </div>
 
-      <p id="doneAllDone" style="display:none;margin:16px 0 0;padding:14px;
-        background:#E7F7F1;border:2px solid #0F9C78;border-radius:14px;
-        text-align:center;font-size:15px;font-weight:800;color:#0B5A45;">
-        다 하셨습니다. 곧 연락드리겠습니다!</p>
+      <a id="새창으로" class="다음단추 연함" style="display:none;"
+         href="#" target="_blank" rel="noopener">새 창에서 열기</a>
+
+      <button type="button" id="다음단추" class="다음단추">다 했어요, 다음 &rarr;</button>
+
+      <p class="끝났다" id="doneAllDone" style="display:none;">
+        다 하셨습니다!<br>곧 연락드리겠습니다.</p>
     </div>
   </div>
 </div>
@@ -902,17 +945,11 @@ async function 신청보내기(모홈도열까){
     신청시각: new Date().toLocaleString('ko-KR')
   };
 
-  /* ★ 신청할 때 창을 열지 않는다. (2026-08-31)
-     폰에서는 새 창이 폼을 덮어버려서, 손님이 인증만 하고 돌아오지 않았다.
-     이제 신청을 먼저 끝내고, 완료 화면에서 손님이 직접 누르게 한다.
-     완료 화면의 단추는 손님이 진짜로 누르는 것이라 팝업 차단도 안 걸린다. */
-  /* 창은 누른 그 순간에 열어야 한다. 기다렸다 열면 팝업으로 막힌다.
-     새 탭이라 폼은 뒤에 그대로 살아 있다. 손님은 돌아올 수 있다. */
-  let 모홈창 = null;
   if(모홈도열까){
-    try{ 모홈창 = window.open(mohomBtn.href, 'mohom'); }catch(e){ 모홈창 = null; }
+    /* 창을 새로 안 띄운다. 완료 화면 안의 「창문」에서 보여준다. (2026-08-31)
+       새 창으로 내보내면 손님이 모홈 화면에 머물다 그냥 나가버린다. */
     mohom눌렀나 = true;
-    mohom창열림 = !!모홈창;
+    mohom창열림 = true;
     mohom누른때 = new Date().toLocaleString('ko-KR');
     payload.알릴의무 = 알릴의무답변();
   }
@@ -962,42 +999,111 @@ async function 신청보내기(모홈도열까){
     + $('pfName').textContent + ' ' + $('pfTitle').textContent
     + '이(가)<br>직접 연락드리겠습니다.';
 
-  /* 진료내역은 「건강보험공단」을 체크한 손님한테만 보여준다.
-     직접 적은 손님은 보험조회만 하면 끝이다. (정용찬님 2026-08-31) */
-  var 공단원함 = $('hiraWant') && $('hiraWant').checked;
-  $('doneStep2').style.display = 공단원함 ? '' : 'none';
-
-  if(모홈창){ $('doneStep1').classList.add('done'); }
-
-  if(공단원함){
-    $('doneNote').innerHTML = '보험조회 창이 열렸습니다. 인증을 마치신 뒤 '
-      + '<b>이 화면으로 돌아와 ②번을 눌러주세요.</b>';
-  }else if(모홈창){
-    $('doneNote').innerHTML = '보험조회 창에서 <b>인증만 마치시면 끝납니다.</b>';
-    $('doneAllDone').style.display = '';
-  }else{
-    $('doneNote').innerHTML = '아래를 눌러 <b>인증을 마쳐주세요.</b> 새 창이 열립니다.';
-  }
+  /* 남은 단계를 정한다.
+     공단 체크한 손님 : 진료내역 → 보험조회
+     직접 적은 손님   : 보험조회만 (고지는 이미 적어주셨다)          */
+  var 공단원함 = !!($('hiraWant') && $('hiraWant').checked);
+  단계들 = 공단원함
+    ? [{제목:'진료내역 확인해 주세요',
+        설명:'건강보험심사평가원 진료내역을 불러옵니다.',
+        주소:진료내역주소},
+       {제목:'가입하신 보험을 불러올게요',
+        설명:'카카오톡·문자 인증으로 확인합니다 (약 1분).',
+        주소:보험조회주소}]
+    : [{제목:'가입하신 보험을 불러올게요',
+        설명:'카카오톡·문자 인증으로 확인합니다 (약 1분).',
+        주소:보험조회주소}];
+  지금단계 = 0;
+  창문그리기();
 
   $('form').style.display='none';
   $('done').style.display='block';
   window.scrollTo(0,0);
 }
 
-/* ── 완료 화면 : 누른 단계는 초록으로 바뀐다 ── */
+/* ══════════════════════════════════════════
+   창문 — 모홈 화면을 우리 폼 안에서 보여준다 (2026-08-31)
+
+   ★ 왜 이렇게 했나
+     예전에는 새 창을 띄웠다. 그러면 손님이 모홈 화면으로 나가버리고,
+     인증이 끝나면 「내가 가진 보험」 목록이 떠서 그걸 구경하다 그냥 나갔다.
+     폰에서는 뒤로가기를 안 누르면 우리 폼으로 못 돌아온다.
+     그래서 두 번째 단계를 거의 다 놓쳤다.
+
+     이제 우리 폼 안에 창문(iframe)을 뚫고 그 안에서 모홈을 돌린다.
+     손님은 우리 폼을 한 번도 안 떠난다.
+     창문 밑의 [다 했어요, 다음] 단추가 늘 보인다.
+
+     ※ 모홈이 나중에 「남의 화면에 못 넣게」 막으면 창문이 빈다.
+       그때는 「새 창에서 열기」 단추가 저절로 나온다. 그러면 예전과 같아진다.
+   ══════════════════════════════════════════ */
+var 단계들 = [];
+var 지금단계 = 0;
+
+function 창문그리기(){
+  var 칸 = 단계들[지금단계];
+  if(!칸){ 다끝냄(); return; }
+
+  $('창번호').textContent = String(지금단계 + 1);
+  $('창제목').childNodes[0].nodeValue = 칸.제목 + ' ';
+  $('창설명').textContent = 칸.설명;
+
+  $('doneAllDone').style.display = 'none';
+  $('창문').style.display = '';
+  $('다음단추').style.display = '';
+  $('다음단추').textContent = (지금단계 + 1 < 단계들.length)
+    ? '다 했어요, 다음 \u2192' : '다 했어요, 끝내기';
+
+  var 막힘 = $('창문막힘');
+  var 틀 = $('창틀');
+  막힘.style.display = 'none';
+  틀.style.display = '';
+  $('새창으로').style.display = 'none';
+  $('새창으로').href = 칸.주소;
+
+  틀.src = 칸.주소;
+
+  /* 4초 안에 안 뜨면 모홈이 막은 것으로 본다 */
+  clearTimeout(window.__창감시);
+  window.__창감시 = setTimeout(function(){
+    var 떴나 = false;
+    try{ 떴나 = !!(틀.contentWindow && 틀.contentWindow.length >= 0); }catch(e){ 떴나 = true; }
+    /* 남의 사이트가 떠 있으면 접근이 막혀 예외가 난다 = 잘 뜬 것 */
+    try{
+      if(틀.contentDocument && 틀.contentDocument.body
+         && 틀.contentDocument.body.innerHTML === ''){ 떴나 = false; }
+    }catch(e){ 떴나 = true; }
+    if(!떴나) 창문막혔다();
+  }, 4000);
+
+  틀.onerror = 창문막혔다;
+}
+
+function 창문막혔다(){
+  $('창틀').style.display = 'none';
+  $('창문막힘').style.display = '';
+  $('새창으로').style.display = '';
+}
+
+function 다끝냄(){
+  $('창문').style.display = 'none';
+  $('다음단추').style.display = 'none';
+  $('새창으로').style.display = 'none';
+  $('창번호').textContent = '\u2713';
+  $('창제목').childNodes[0].nodeValue = '모두 마쳤습니다 ';
+  $('창설명').textContent = '';
+  $('doneAllDone').style.display = '';
+  $('doneAllDone').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
 (function(){
-  var 단계 = [$('doneStep1'), $('doneStep2')];
-  단계.forEach(function(a){
-    if(!a) return;
-    a.addEventListener('click', function(){
-      a.classList.add('done');
-      setTimeout(function(){
-        var 남음 = 단계.some(function(x){
-          return x && x.style.display !== 'none' && !x.classList.contains('done');
-        });
-        if(!남음) $('doneAllDone').style.display = '';
-      }, 300);
-    });
+  var 단추 = $('다음단추');
+  if(!단추) return;
+  단추.addEventListener('click', function(){
+    지금단계 += 1;
+    if(지금단계 >= 단계들.length){ 다끝냄(); return; }
+    창문그리기();
+    $('doneMohom').scrollIntoView({behavior:'smooth', block:'start'});
   });
 })();
 
@@ -1015,6 +1121,9 @@ async function 신청보내기(모홈도열까){
     });
   });
 })();
+
+var 보험조회주소 = 'https://myhom.me/gxrVHtMSbZbmBsuSD/contract';
+var 진료내역주소 = 'https://myhom.me/landing/medical-history?cd=58880';
 
 /* 큰 단추 = 신청 + 모홈 */
 let 모홈동의 = false;
@@ -1052,17 +1161,11 @@ let 모홈동의 = false;
   });
 })();
 
+/* 한 번만 누르면 된다. (정용찬님 2026-08-31)
+   예전에는 이 단추가 「필수 동의 체크박스(☐)」를 겸해서 두 번 눌러야 했다.
+   그 체크박스를 없앴으니 두 번 누를 이유도 없어졌다. */
 mohomBtn.addEventListener('click', function(e){
   e.preventDefault();
-  if(!모홈동의){
-    모홈동의 = true;
-    mohomBtn.classList.add('checked');
-    $('mohomBtnTxt').textContent = '한 번 더 누르면 신청됩니다';
-    setTimeout(function(){
-      if(모홈동의) $('mohomBtnTxt').textContent = '보험조회 및 신청하기';
-    }, 1800);
-    return;
-  }
   신청보내기(true);
 });
 
