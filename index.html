@@ -580,8 +580,13 @@
         </div>
       </div>
 
-      <a id="새창으로" class="다음단추 연함" style="display:none;"
-         href="#" target="_blank" rel="noopener">새 창에서 열기</a>
+      <!-- 2026-09-06 밤: 늘 보인다. 시크릿 탭·아이폰처럼 다른 사이트 쿠키를 막는 폰에서는
+           창문 안 인증이 INVALID_PARAMS 로 막힌다. 그때 손님이 새 창에서 인증하고 돌아온다. -->
+      <a id="새창으로" class="다음단추 연함"
+         href="#" target="_blank" rel="noopener">인증이 안 되면 여기를 눌러 새 창에서 하기</a>
+      <div id="새창안내" style="display:none;margin:10px 0 0;padding:12px 14px;background:#FFF8E1;
+           border:1.5px solid #FFE082;border-radius:12px;font-size:14px;line-height:1.7;color:#3D2B1F;">
+        새 창에서 인증을 마치신 뒤 <b>이 화면으로 돌아와 주세요.</b><br>돌아오시면 저절로 확인됩니다.</div>
 
       <!-- 순서 안내 (2026-09-06): 동의만 누르고 넘어가는 일을 막는다.
            창문 밑에 둔다 — 위에 두면 폰에서 인증창이 밀려 안 보인다 (정용찬님 2026-09-06 밤) -->
@@ -1018,7 +1023,9 @@ function 창문그리기(){
   var 틀 = $('창틀');
   막힘.style.display = 'none';
   틀.style.display = '';
-  $('새창으로').style.display = 'none';
+  $('새창으로').style.display = '';
+  $('새창으로').textContent = '인증이 안 되면 여기를 눌러 새 창에서 하기';
+  if($('새창안내')) $('새창안내').style.display = 'none';
   $('새창으로').href = 칸.주소;
 
   /* ★ 매번 새 화면으로 연다. (정용찬님 2026-09-01)
@@ -1048,12 +1055,22 @@ function 창문막혔다(){
   $('창틀').style.display = 'none';
   $('창문막힘').style.display = '';
   $('새창으로').style.display = '';
+  $('새창으로').textContent = '새 창에서 열기';
 }
+
+/* 새 창 단추를 누르면 「돌아오세요」 안내를 띄운다 (2026-09-06 밤) */
+(function(){
+  var a = $('새창으로'); if(!a) return;
+  a.addEventListener('click', function(){
+    if($('새창안내')) $('새창안내').style.display = '';
+  });
+})();
 
 function 다끝냄(){
   $('창문').style.display = 'none';
   $('다음단추').style.display = 'none';
   $('새창으로').style.display = 'none';
+  if($('새창안내')) $('새창안내').style.display = 'none';
   $('창번호').textContent = '\u2713';
   $('창제목').childNodes[0].nodeValue = '모두 마쳤습니다 ';
   $('창설명').textContent = '';
