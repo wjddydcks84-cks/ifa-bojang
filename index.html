@@ -338,8 +338,9 @@
   .점{ display:inline-block; animation:통통 1.2s ease-in-out infinite; font-weight:900; }
   .점:nth-child(2){ animation-delay:.15s; }
   .점:nth-child(3){ animation-delay:.3s; }
-  /* 순서 안내 — 빨간 선 하나가 테두리를 한 바퀴씩 돈다 (정용찬님 2026-09-07)
-     ★ 왜: 손님이 ⑤ 신청하기를 안 누르고 나가는 일이 제일 많다. 거기를 붙잡는다. */
+  /* 돌테 — 빨간 선 하나가 테두리를 한 바퀴씩 돈다 (정용찬님 2026-09-07)
+     쓰는 곳: 3번 밑 큰 「진료내역 및 보험조회 신청하기」 단추 (#신청틀)
+     ★ 왜: 손님이 이 단추를 안 누르고 나가는 일이 제일 많다. 거기를 붙잡는다. */
   .돌테{ position:relative; margin:10px 0 0; padding:2px; border-radius:14px;
     overflow:hidden; background:#FFE082; }
   @keyframes 테돌기{
@@ -350,9 +351,14 @@
     width:150vw; height:150vw;
     background:conic-gradient(transparent 0 84%, #FF2D2D 89%, #FF7A7A 94%, transparent 99%);
     animation:테돌기 2.6s linear infinite; will-change:transform; }
-  #순서안내{ position:relative; padding:10px 12px; background:#FFF8E1;
+  #순서안내{ position:relative; padding:10px 12px; background:#FFF8E1; border:1.5px solid #FFE082;
     border-radius:12px; font-size:13.5px; line-height:1.7; color:#3D2B1F; }
   .꼭{ color:#D81B1B; font-weight:900; }
+  /* 주황 단추용: 틈은 투명(카드 흰색이 비침), 선은 굵고 진한 빨강, 그림자는 틀이 진다 */
+  .돌테.주황{ padding:3px; border-radius:15px; background:transparent;
+    box-shadow:0 4px 14px rgba(255,107,0,.28); }
+  .돌테.주황::before{ background:conic-gradient(transparent 0 80%, #E60012 87%, #FF6B6B 94%, transparent 100%); }
+  #신청틀 .mohombtn{ position:relative; margin-top:0; box-shadow:none; }
 
   /* 회색 「새 창에서 하기」 단추 — 회색 그대로 두고 부드럽게 빛만 지나간다.
      (정용찬님 2026-09-06 밤 「거기에도 효과 넣어야 되는 거 아니야」 · 「회색같은 색으로」)
@@ -588,10 +594,13 @@
       상담 목적 외에는 쓰지 않으며, 상담이 끝나면 파기합니다.</span>
     </label>
 
+    <!-- 2026-09-07: 빨간 선 하나가 이 단추 테두리를 한 바퀴씩 돈다
+         (정용찬님 「신청하기도 테두리에 빨간색 일자 하나 만들어서 한 바퀴 돌아가게」) -->
+    <div class="돌테 주황" id="신청틀" style="margin-top:14px;">
     <a id="mohomBtn" class="mohombtn"
-       style="margin-top:14px;"
        href="https://myhom.me/gxrVHtMSbZbmBsuSD/contract"
        rel="noopener"><span class="tx"><b id="mohomBtnTxt">건강보험공단 진료내역 및 보험조회 신청하기</b><i>누르시면 인증 화면이 이어서 나옵니다</i></span></a>
+    </div>
 
     <p id="mohomWait" style="display:none;margin:14px 0 0;padding:15px 16px;
       background:#FFF3E0;border:2px solid #FFE0B2;border-radius:14px;
@@ -660,7 +669,7 @@
            창문 밑에 둔다 — 위에 두면 폰에서 인증창이 밀려 안 보인다 (정용찬님 2026-09-06 밤)
            2026-09-07: 빨간 선 하나가 테두리를 한 바퀴씩 돈다 (정용찬님 「신청하기도 …한바퀴 돌아가게」)
            ⑤ 신청하기까지 안 누르고 나가는 일이 제일 많아서 여기를 붙잡아야 한다. -->
-      <div id="순서안내틀" class="돌테" style="display:none;"><div id="순서안내"></div></div>
+      <div id="순서안내틀" style="display:none;margin:10px 0 0;"><div id="순서안내"></div></div>
 
       <!-- 2026-09-06 밤: 늘 보인다. 시크릿 탭·아이폰처럼 다른 사이트 쿠키를 막는 폰에서는
            창문 안 인증이 INVALID_PARAMS 로 막힌다. 그때 손님이 새 창에서 인증하고 돌아온다. -->
