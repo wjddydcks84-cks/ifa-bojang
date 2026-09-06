@@ -1343,7 +1343,7 @@ $('aDownload').onclick=()=>{
   var 칸들 = ['cname','rrn1','phone','telco','email','zip','addr','addr2','job','jobEtc',
               'hgt','wgt','fee','memo','agree','onlyAnalysis','planChk'];
   var 일주일 = 7*24*60*60*1000;
-  var 물어볼간격 = 10000;     // 시트에 상태 묻는 간격
+  var 물어볼간격 = 4000;      // 시트에 상태 묻는 간격 (2026-09-06 밤 10초→4초, 넘어가는 게 느려서)
   var 오래됨 = 180000;        // 이만큼 지나도 확인 안 되면 안내 + 「그래도」 보이기
   function 읽기(){ try{ return JSON.parse(localStorage.getItem(DKEY)||'null'); }catch(e){ return null; } }
   function 쓰기(d){ try{ localStorage.setItem(DKEY, JSON.stringify(d)); }catch(e){} }
