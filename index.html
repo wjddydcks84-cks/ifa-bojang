@@ -320,17 +320,26 @@
   /* 기다리는 줄이 눈에 띄게 (정용찬님 2026-09-06 밤 「글로만 두면 잘 안 볼 것 같아」)
      ★ 깜빡깜빡(보였다 안 보였다)은 안 쓴다. 고장난 것처럼 보이고 눈이 아프다.
         대신 숨쉬듯 밝아졌다 어두워지고, 테두리에 빛이 한 번씩 돈다. */
+  /* 2026-09-07 정용찬님: 파란색이 갑자기 끼어드는 느낌이라 주황으로. 효과는 빨강. */
   @keyframes 두근{
-    0%,100%{ background:#EEF3FF; border-color:#B9CCFF; box-shadow:0 0 0 0 rgba(74,114,255,.55); }
-    50%    { background:#DCE6FF; border-color:#6E92FF; box-shadow:0 0 0 9px rgba(74,114,255,0); }
+    0%,100%{ background:#FFF3E6; border-color:#FFC08A; box-shadow:0 0 0 0 rgba(230,0,18,.45); }
+    50%    { background:#FFE4CC; border-color:#FF9A4D; box-shadow:0 0 0 9px rgba(230,0,18,0); }
   }
-  #상태줄.두근{ position:relative; overflow:hidden; font-size:15.5px;
+  /* 2026-09-07 정용찬님 「박스를 한 바퀴 돌게」 — 밑에서만 지나가던 띠를 빼고
+     테두리를 빨간 선 하나가 빙 돈다. 신청하기 단추(.돌테)와 같은 방식. */
+  #상태줄틀{ margin:12px 0 0; }
+  #상태줄틀.두근{ position:relative; overflow:hidden; border-radius:15px; padding:3px; background:#FFD9B0; }
+  #상태줄틀.두근::before{ content:''; position:absolute; left:50%; top:50%; width:150vw; height:150vw;
+    background:conic-gradient(transparent 0 82%, #E60012 88%, #FF7A7A 94%, transparent 100%);
+    animation:테돌기 2.2s linear infinite; will-change:transform; }
+  #상태줄틀.두근 > #상태줄{ position:relative; border-color:transparent; font-size:15.5px;
     animation:두근 1.5s ease-in-out infinite; }
-  /* 아래에서 빛줄기가 흘러간다 — 「지금 돌아가는 중」이 한눈에 보인다 */
-  @keyframes 흐름{ 0%{ transform:translateX(-120%); } 100%{ transform:translateX(380%); } }
-  #상태줄.두근::after{ content:''; position:absolute; left:0; bottom:0; height:5px; width:34%;
-    border-radius:5px; background:linear-gradient(90deg,rgba(74,114,255,0),#4A72FF,rgba(74,114,255,0));
-    animation:흐름 1.4s ease-in-out infinite; }
+
+  /* 초읽기 — 10부터 거꾸로. 0이 되면 다시 10부터 (확인이 늦어질 수 있으므로) */
+  .초읽기칸{ margin-top:9px; text-align:center; }
+  #초읽기{ display:inline-block; min-width:56px; padding:5px 16px; border-radius:999px;
+    background:#E60012; color:#fff; font-size:23px; font-weight:900; letter-spacing:-.5px;
+    box-shadow:0 3px 10px rgba(230,0,18,.35); }
   @keyframes 뱅글{ to{ transform:rotate(360deg); } }
   .뱅글{ display:inline-block; animation:뱅글 1.1s linear infinite; }
   /* 점 세 개가 차례로 커진다 */
@@ -390,7 +399,7 @@
 
   /* 움직임을 싫어하는 설정이면 멈춘다 */
   @media (prefers-reduced-motion: reduce){
-    #상태줄.두근, #상태줄.두근::after, .뱅글, .점,
+    #상태줄틀.두근::before, #상태줄틀.두근 > #상태줄, .뱅글, .점,
     #새창으로, #새창으로::after, #새창으로.돋보임, .돌테::before, #직접다음{ animation:none !important; }
   }
 
@@ -663,8 +672,8 @@
       <!-- ★ 차례 (정용찬님 2026-09-07): 인증창 바로 밑에 「잠시만 기다려 주십시오」가 온다.
            지금 어떻게 되고 있는지가 제일 먼저 보여야 한다.
            그다음 하는 법(노랑), 맨 끝에 안 될 때 쓰는 비상구(회색). -->
-      <div id="상태줄" style="margin:12px 0 0;padding:13px 14px;border-radius:12px;background:#F3F6FF;
-           border:1.5px solid #C9D6FF;font-size:14.5px;line-height:1.7;color:#1F2A5A;display:none;"></div>
+      <div id="상태줄틀" style="display:none;"><div id="상태줄" style="padding:13px 14px;border-radius:12px;
+           background:#FFF3E6;border:1.5px solid #FFC08A;font-size:14.5px;line-height:1.7;color:#5A2E00;"></div></div>
 
       <!-- 2026-09-07 (정용찬님 「해」): 모홈 「완료」 뒤에 손님이 몇 초~수십 초 멈춰 서서 나간다.
            1단계 시작 40초 뒤부터 손님이 직접 보험조회로 넘어갈 수 있게 한다.
@@ -1488,33 +1497,49 @@ $('aDownload').onclick=()=>{
 
   /* ── 확인 중 안내 ── */
   var 안내글 = [
-    '<b>① 진료 내역 확인 동의 → ② 이름·통신사·번호 → ③ 주민등록번호 → ④ 문자 인증번호 → <span class="꼭">⑤ 신청하기</span></b> 순서예요. '
-      + '<span class="꼭">「완료되었습니다」</span>까지 보셔야 확인됩니다.',
-    '<b>① 약관 동의 → ② 이름·통신사·번호 → ③ 주민등록번호 → ④ 문자 인증번호</b> 순서예요. '
-      + '<span class="꼭">가입하신 보험 목록</span>이 뜰 때까지 보셔야 확인됩니다.'
+    '<span class="꼭">★ 마지막 「신청하기」</span>까지 누르셔야 합니다.<br><span class="꼭">「완료되었습니다」</span>가 뜰 때까지 보세요.',
+    '<span class="꼭">★ 가입하신 보험 목록</span>이 뜰 때까지 보셔야 확인됩니다.'
   ];
   /* 2026-09-06 밤 (정용찬님): 인증을 다 마치고 확인을 눌러도 「확인하고 있어요」만 떠서
      안 된 줄 알고 나가는 일을 막는다. 폼은 손님이 언제 확인을 눌렀는지 못 보므로,
      인증 전에 봐도 인증 뒤에 봐도 말이 되는 글이라야 한다. */
-  var 확인글 = ['인증을 마치셨으면 <b>잠시만 기다려 주십시오.</b><br>확인되는 대로 <b>보험 이력 조회 화면</b>으로 넘어갑니다.',
-               '인증을 마치셨으면 <b>잠시만 기다려 주십시오.</b><br>확인되는 대로 <b>신청이 접수</b>됩니다.'];
+  var 확인글 = ['인증을 마치셨나요?<br>그대로 두시면 <b>10초 안에 보험 이력 조회 화면</b>으로 넘어갑니다.',
+               '인증을 마치셨나요?<br>그대로 두시면 <b>10초 안에 신청이 접수</b>됩니다.'];
   var 늦은글 = ['아직 진료내역 확인이 안 됐어요. 위 화면에서 <b>문자 인증번호를 넣고 「신청하기」</b>까지 누르셨나요?',
                '아직 보험조회 확인이 안 됐어요. 위 화면에서 <b>문자 인증번호</b>까지 넣고 보험 목록이 뜨는 걸 보셨나요?'];
   var 전화 = '', 단계시작 = 0, 묻기타이머 = null, 끝났나 = false, 마지막상태 = null;
 
-  var 점세개 = ' <span class="점">.</span><span class="점">.</span><span class="점">.</span>';
+  /* 초읽기 (2026-09-07 정용찬님) — 10부터 거꾸로. 0이 되면 다시 10부터.
+     ★ 폼은 손님이 언제 인증을 마쳤는지 모른다(모홈 창 안을 못 본다).
+       그래서 「끝나는 시각」을 약속하지 않고, 계속 도는 숫자로 「지금 확인 중」만 보여준다. */
+  var 초읽기타이머 = null;
+  function 초읽기시작(){
+    clearInterval(초읽기타이머);
+    var 남은 = 10;
+    var 칠하기 = function(){ var e = $('초읽기'); if(e) e.textContent = 남은; };
+    칠하기();
+    초읽기타이머 = setInterval(function(){
+      if(!$('초읽기')){ clearInterval(초읽기타이머); 초읽기타이머 = null; return; }
+      남은 -= 1; if(남은 <= 0) 남은 = 10;
+      칠하기();
+    }, 1000);
+  }
+  function 초읽기멈춤(){ clearInterval(초읽기타이머); 초읽기타이머 = null; }
+
   function 상태줄(html, 색){
     var el = $('상태줄'); if(!el) return;
-    /* 기다리는 중(파랑)일 때만 움직인다. 다 됐거나(초록) 늦었을 때(노랑)는 가만히 둔다. */
+    /* 기다리는 중일 때만 움직인다. 다 됐거나(초록) 늦었을 때(노랑)는 가만히 둔다. */
     var 기다림 = !색;
     if(기다림){
-      html = html.replace('🔄', '<span class="뱅글">🔄</span>') + 점세개;
+      html = html.replace('🔄', '<span class="뱅글">🔄</span>')
+           + '<div class="초읽기칸"><span id="초읽기">10</span></div>';
     }
-    el.innerHTML = html; el.style.display = '';
-    el.classList.toggle('두근', 기다림);
+    el.innerHTML = html;
+    var 틀 = $('상태줄틀'); if(틀){ 틀.style.display = ''; 틀.classList.toggle('두근', 기다림); }
+    if(기다림) 초읽기시작(); else 초읽기멈춤();
     if(색==='초록'){ el.style.background='#EAF9EE'; el.style.borderColor='#9ED9AE'; el.style.color='#175C2B'; }
     else if(색==='노랑'){ el.style.background='#FFF8E1'; el.style.borderColor='#FFE082'; el.style.color='#5A3A00'; }
-    else { el.style.background=''; el.style.borderColor=''; el.style.color='#1F2A5A'; }
+    else { el.style.background=''; el.style.borderColor=''; el.style.color='#5A2E00'; }
   }
   /* 「신청이 접수되었어요」는 2단계까지 끝난 뒤에만 (정용찬님 2026-09-06 「처음에 나오면 그냥 나갈 것 같다」) */
   var 손님이름 = '';
@@ -1586,7 +1611,7 @@ $('aDownload').onclick=()=>{
     }
   }
   function 다됐다(){
-    끝났나 = true; clearInterval(묻기타이머);
+    끝났나 = true; clearInterval(묻기타이머); 초읽기멈춤();
     상태줄('✓ 진료내역과 보험조회가 모두 확인됐어요. 감사합니다!', '초록');
     if($('그래도')) $('그래도').style.display = 'none';
     다끝냄();
