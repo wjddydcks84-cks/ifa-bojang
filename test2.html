@@ -1,0 +1,30 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>창문 뚫기 시험</title>
+<style>body{font:14px system-ui;margin:0;padding:8px}
+iframe{width:380px;height:520px;border:2px solid #f60;display:block;margin-top:6px}
+#로그{font:12px monospace;white-space:pre-wrap;background:#111;color:#0f0;padding:8px}
+button{font-size:16px;padding:10px 16px;margin:6px 0}</style></head><body>
+<div id="로그">시험2 시작…</div>
+<button id="허용">① 쿠키 허용 받기 (requestStorageAccess)</button>
+<button id="열기">② 창문 열기</button>
+<div id="담을곳"></div>
+<script>
+var L=document.getElementById('로그');
+function 적기(s){L.textContent+='\n'+s;}
+적기('부모: '+location.href);
+적기('requestStorageAccess 있나: '+(!!document.requestStorageAccess));
+적기('requestStorageAccessFor 있나: '+(!!document.requestStorageAccessFor));
+
+document.getElementById('허용').onclick=function(){
+  if(document.requestStorageAccessFor){
+    document.requestStorageAccessFor('https://msea.meritzfire.com')
+      .then(function(){적기('requestStorageAccessFor 성공');})
+      .catch(function(e){적기('requestStorageAccessFor 실패: '+e);});
+  }else{ 적기('requestStorageAccessFor 없음'); }
+};
+document.getElementById('열기').onclick=function(){
+  var h='<iframe id=t src="https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12"></iframe>';
+  document.getElementById('담을곳').innerHTML=h;
+  document.getElementById('t').addEventListener('load',function(){적기('창문 load');});
+};
+</script></body></html>
