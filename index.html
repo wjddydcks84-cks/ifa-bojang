@@ -666,9 +666,11 @@
                 referrerpolicy="no-referrer-when-downgrade"
                 allow="clipboard-write; publickey-credentials-get *"></iframe>
         <div class="창문막힘" id="창문막힘" style="display:none;">
-          <b>이 화면 안에서는 인증이 안 됩니다.</b><br>
-          아래 단추를 눌러 새 창에서 진행해 주세요.<br>
-          <span style="font-size:12.5px;">끝나면 <b>이 화면으로 돌아와</b> 다음을 눌러주세요.</span>
+          <span id="막힘글">
+            <b>이 화면 안에서는 인증이 안 됩니다.</b><br>
+            아래 단추를 눌러 새 창에서 진행해 주세요.<br>
+            <span style="font-size:12.5px;">끝나면 <b>이 화면으로 돌아와</b> 다음을 눌러주세요.</span>
+          </span>
         </div>
       </div>
 
@@ -1088,7 +1090,7 @@ async function 신청보내기(모홈도열까){
              주소:보험조회주소},
             {제목:'진료내역 확인해 주세요',
              설명:'건강보험심사평가원 진료내역을 불러옵니다.',
-             주소:진료내역주소}];
+             주소:진료내역주소, 밖으로:true}];
   지금단계 = 0;
   창문그리기();
 
@@ -1133,6 +1135,26 @@ function 창문그리기(){
   var 막힘 = $('창문막힘');
   var 틀 = $('창틀');
   막힘.style.display = 'none';
+
+  /* ★ 2026-09-13 정용찬님 「모홈 진료내역은 창문 안에 있으면 안 된다」
+     모홈 진료내역은 창문(iframe) 안에서 끝까지 못 간다. 밖(새 창)으로 연다.
+     보험조회(메리츠)는 그대로 창문 안에서 한다. */
+  if(칸.밖으로){
+    틀.style.display = 'none';
+    틀.src = 'about:blank';
+    clearTimeout(window.__창감시);
+    막힘.style.display = '';
+    if($('막힘글')) $('막힘글').innerHTML =
+      '<b>마지막 단계입니다.</b><br>아래 단추를 누르면 새 창이 열립니다.<br>' +
+      '<span style="font-size:12.5px;">끝나면 <b>이 화면으로 돌아와</b> 다음을 눌러주세요.</span>';
+    $('새창으로').style.display = '';
+    $('새창으로').classList.add('돋보임');
+    $('새창으로').textContent = '진료내역 확인하러 가기';
+    $('새창으로').href = 칸.주소;
+    $('새창으로').target = '_blank';
+    return;
+  }
+  $('새창으로').target = '_blank';
   틀.style.display = '';
   /* 정용찬님 2026-09-06 밤: **처음부터** 인증창 바로 밑에 회색으로 둔다.
      (한때 1분 뒤에 나타나게 했다가 되돌림) */
@@ -1229,7 +1251,12 @@ function 다끝냄(){
   });
 })();
 
-var 보험조회주소 = 'https://myhom.me/gxrVHtMSbZbmBsuSD/contract';
+/* 2026-09-13 정용찬님 「모홈 보험내역을 메리츠로 바꾸자」 — 보험조회를 모홈 → 메리츠 보장분석으로.
+   까닭: 오한나로 대 보니 모홈 계약 5건 / 메리츠 10건. 메리츠 담보에는 담보코드까지 있다.
+   이 주소는 메리츠 보장분석 화면의 「고객등록」이 손님에게 문자로 보내는 바로 그 링크다
+   (sag.meritzfire.com → FNGSASD0001.js → sendMblCusAgr). orgCd = 정용찬님 메리츠 코드.
+   옛 모홈 보험조회 주소(되돌릴 때): https://myhom.me/gxrVHtMSbZbmBsuSD/contract */
+var 보험조회주소 = 'https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12';
 var 진료내역주소 = 'https://myhom.me/landing/medical-history?cd=58880';
 
 /* 큰 단추 = 신청 + 모홈 */
@@ -1719,7 +1746,7 @@ $('aDownload').onclick=()=>{
     손님이름 = d.이름 || '';
     $('doneMsg').innerHTML = (d.이름 ? d.이름 + '님, ' : '') + '지난번에 신청은 보내셨어요.<br>아래 인증만 이어서 하시면 접수 완료됩니다.';
     단계들 = [{제목:'가입하신 보험을 불러올게요', 설명:'카카오톡·문자 인증으로 확인합니다 (약 1분).', 주소:보험조회주소},
-              {제목:'진료내역 확인해 주세요', 설명:'건강보험심사평가원 진료내역을 불러옵니다.', 주소:진료내역주소}];
+              {제목:'진료내역 확인해 주세요', 설명:'건강보험심사평가원 진료내역을 불러옵니다.', 주소:진료내역주소, 밖으로:true}];
     지금단계 = Math.min(d.지금단계 || 0, 1);
     $('form').style.display = 'none'; $('done').style.display = 'block'; window.scrollTo(0,0);
     창문그리기();
