@@ -1,0 +1,31 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>쿠키 심어보기</title>
+<style>body{font:13px system-ui;margin:0;padding:6px}
+iframe{width:380px;height:380px;border:2px solid #f60;display:block;margin-top:6px}
+#로그{font:12px monospace;white-space:pre-wrap;background:#111;color:#0f0;padding:6px}
+button{font-size:15px;padding:8px 14px;margin:4px 2px}</style></head><body>
+<div id="로그">5차: 쿠키 먼저 심기</div>
+<p>메리츠 창을 한 번 열었다 닫으면 그 브라우저에 메리츠 쿠키가 생긴다.<br>
+그 뒤에 창문을 띄우면 그 쿠키가 실릴까? (크롬의 「최근 상호작용」 예외를 노린다)</p>
+<button id="열기">① 메리츠 창 열기 (쿠키 심기)</button>
+<button id="창문">② 창문 띄우기</button>
+<div id="담을곳"></div>
+<script>
+var L=document.getElementById('로그'), 창=null;
+function 적기(s){L.textContent+='\n'+s;}
+document.getElementById('열기').onclick=function(){
+  창=window.open('https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12','메리츠','width=420,height=700');
+  적기('창 열었다 (' + (창?'ok':'막힘') + ')');
+  var n=0, t=setInterval(function(){
+    n++;
+    var 닫힘=false; try{ 닫힘 = 창 && 창.closed; }catch(e){ 닫힘='못읽음'; }
+    if(n<=3||닫힘===true) 적기('  '+n+'초 뒤 closed='+닫힘);
+    if(닫힘===true||n>25){ clearInterval(t); }
+  },1000);
+};
+document.getElementById('창문').onclick=function(){
+  document.getElementById('담을곳').innerHTML=
+    '<iframe id="t" src="https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12"></iframe>';
+  document.getElementById('t').addEventListener('load',function(){적기('창문 load');});
+};
+</script></body></html>
