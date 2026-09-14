@@ -1,0 +1,24 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>창문 뚫기 3차</title>
+<style>body{font:13px system-ui;margin:0;padding:6px}
+iframe{width:360px;height:420px;border:2px solid #f60;display:inline-block;vertical-align:top;margin:4px}
+#로그{font:12px monospace;white-space:pre-wrap;background:#111;color:#0f0;padding:6px}
+h4{margin:4px}</style></head><body>
+<div id="로그">3차 시험…</div>
+<div>
+<div style="display:inline-block"><h4>① credentialless</h4>
+<iframe id="a" credentialless src="https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12"></iframe></div>
+<div style="display:inline-block"><h4>② sandbox 풀기</h4>
+<iframe id="b" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation allow-storage-access-by-user-activation"
+        src="https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12"></iframe></div>
+<div style="display:inline-block"><h4>③ 그냥 (대조군)</h4>
+<iframe id="c" src="https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12"></iframe></div>
+</div>
+<script>
+var L=document.getElementById('로그');
+function 적기(s){L.textContent+='\n'+s;}
+적기('credentialless 되는 브라우저인가: '+('credentialless' in HTMLIFrameElement.prototype));
+['a','b','c'].forEach(function(id){
+  document.getElementById(id).addEventListener('load',function(){ 적기(id+' load'); });
+});
+</script></body></html>
