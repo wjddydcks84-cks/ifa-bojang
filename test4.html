@@ -1,0 +1,27 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>창문 오류 잡기</title>
+<style>body{font:13px system-ui;margin:0;padding:6px}
+iframe{width:380px;height:300px;border:2px solid #f60;display:block}
+#로그{font:12px monospace;white-space:pre-wrap;background:#111;color:#0f0;padding:6px;max-height:45vh;overflow:auto}</style>
+</head><body>
+<div id="로그">오류 잡기 시험…</div>
+<iframe id="t" src="https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&usg=12"></iframe>
+<script>
+var L=document.getElementById('로그');
+function 적기(s){L.textContent+='\n'+s;}
+window.addEventListener('error', function(e){ 적기('부모error: '+e.message); }, true);
+window.addEventListener('message', function(e){ 적기('message: '+String(e.data).slice(0,120)); });
+document.getElementById('t').addEventListener('load', function(){
+  적기('load 됨');
+  /* 창문이 받은 파일들을 부모의 Resource Timing 으로 본다 (cross-origin 이어도 이름은 보인다) */
+  setTimeout(function(){
+    var es = performance.getEntriesByType('resource')
+      .filter(function(r){ return r.name.indexOf('meritzfire') >= 0; });
+    적기('창문이 받은 파일 ' + es.length + '개');
+    es.slice(0, 40).forEach(function(r){
+      적기('  ' + (r.responseStatus||'?') + ' ' + r.name.replace('https://msea.meritzfire.com','').slice(0,70)
+           + '  ' + Math.round(r.duration) + 'ms  크기=' + (r.transferSize||0));
+    });
+  }, 8000);
+});
+</script></body></html>
