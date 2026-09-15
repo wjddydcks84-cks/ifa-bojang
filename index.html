@@ -612,7 +612,7 @@
     <div class="돌테 주황" id="신청틀" style="margin-top:14px;">
     <a id="mohomBtn" class="mohombtn"
        href="https://msea.meritzfire.com/mblCusReg.do?orgCd=726051080&amp;usg=12"
-       rel="noopener"><span class="tx"><b id="mohomBtnTxt">건강보험공단 진료내역 및 보험조회 신청하기</b><i>누르시면 인증 화면이 이어서 나옵니다</i></span></a>
+       rel="noopener"><span class="tx"><b id="mohomBtnTxt">보험조회 및 건강보험공단 진료내역 신청하기</b><i>누르시면 인증 화면이 이어서 나옵니다</i></span></a>
     </div>
 
     <p id="mohomWait" style="display:none;margin:14px 0 0;padding:15px 16px;
@@ -1131,8 +1131,9 @@ function 돌아왔다(){
   if(!돌아옴감시) return;
   clearInterval(돌아옴감시.타이머);
   window.removeEventListener('visibilitychange', 돌아옴감시.보임);
-  window.removeEventListener('focus', 돌아왔다);
-  window.removeEventListener('pageshow', 돌아왔다);
+  window.removeEventListener('visibilitychange', 돌아옴감시.떠남);
+  window.removeEventListener('focus', 돌아옴감시.돌아옴);
+  window.removeEventListener('pageshow', 돌아옴감시.돌아옴);
   돌아옴감시 = null;
   var 끝인가 = (지금단계 + 1 >= 단계들.length);
   if($('막힘글')) $('막힘글').innerHTML =
@@ -1149,18 +1150,25 @@ function 돌아오면다음(주소){
   try{ 연창 = window.open(주소, '_blank'); }catch(e){ 연창 = null; }
   if(!연창){ location.href = 주소; return; }      /* 팝업이 막히면 그냥 그 창으로 간다 */
   if(돌아옴감시){ clearInterval(돌아옴감시.타이머); }
-  var 보임 = function(){ if(document.visibilityState === 'visible') 돌아왔다(); };
+  /* ★ 2026-09-15 — 단추를 누른 **직후**에도 focus 가 한 번 뜬다.
+     그걸 「돌아왔다」로 읽으면 감시가 바로 꺼져, 진짜 돌아왔을 때 아무 일도 안 일어난다.
+     그래서 ①한 번은 화면을 **떠난 것**을 본 뒤에야 ②돌아온 것을 인정한다. */
+  var 떠났나 = false;
+  var 떠남 = function(){ if(document.visibilityState === 'hidden') 떠났나 = true; };
+  var 보임 = function(){ if(document.visibilityState === 'visible' && 떠났나) 돌아왔다(); };
+  var 돌아옴 = function(){ if(떠났나) 돌아왔다(); };
   var n = 0;
   var 타이머 = setInterval(function(){
     n++;
     var 닫힘 = false;
     try{ 닫힘 = !!(연창 && 연창.closed); }catch(e){ 닫힘 = false; }
-    if(닫힘 || n > 900) 돌아왔다();              /* 15분 넘으면 그만 본다 */
+    if(닫힘 || n > 900) 돌아왔다();              /* 창이 닫히면 떠난 적 없어도 인정 */
   }, 1000);
-  돌아옴감시 = {타이머: 타이머, 보임: 보임};
+  돌아옴감시 = {타이머: 타이머, 보임: 보임, 떠남: 떠남, 돌아옴: 돌아옴};
+  window.addEventListener('visibilitychange', 떠남);
   window.addEventListener('visibilitychange', 보임);
-  window.addEventListener('focus', 돌아왔다);
-  window.addEventListener('pageshow', 돌아왔다);
+  window.addEventListener('focus', 돌아옴);
+  window.addEventListener('pageshow', 돌아옴);
   if($('막힘글')) $('막힘글').innerHTML =
     '<b>새 창에서 진행해 주세요.</b><br>끝나면 <b>이 화면으로 돌아오세요.</b><br>' +
     '<span style="font-size:12.5px;">돌아오시면 다음 단계가 저절로 나옵니다.</span>' +
@@ -1179,11 +1187,13 @@ function 창문그리기(){
   if(돌아옴감시){
     clearInterval(돌아옴감시.타이머);
     window.removeEventListener('visibilitychange', 돌아옴감시.보임);
-    window.removeEventListener('focus', 돌아왔다);
-    window.removeEventListener('pageshow', 돌아왔다);
+    window.removeEventListener('visibilitychange', 돌아옴감시.떠남);
+    window.removeEventListener('focus', 돌아옴감시.돌아옴);
+    window.removeEventListener('pageshow', 돌아옴감시.돌아옴);
     돌아옴감시 = null;
   }
   var a0 = $('새창으로'); if(a0) a0.onclick = null;
+  if(window.__단추틀) window.__단추틀.style.display = 'none';
 
   $('창번호').textContent = String(지금단계 + 1);
   $('창제목').childNodes[0].nodeValue = 칸.제목 + ' ';
@@ -1230,7 +1240,21 @@ function 창문그리기(){
       '아래 단추를 누르면 새 창이 열립니다.<br>' +
       '<span style="font-size:12.5px;">끝나면 <b>이 화면으로 돌아오세요.</b> 나머지는 저절로 이어집니다.</span>'
       + 메리츠안내;
+    /* ★ 2026-09-15 정용찬님 — 단추가 「인증을 마치셨나요」 박스보다 **위**에 있어야 하고
+         돌아가는 빨간 선 효과도 그 단추에 있어야 한다. 안 쓰는 옛 안내는 숨긴다. */
     var a = $('새창으로');
+    var 창칸 = $('창문');
+    if(창칸 && a.parentElement !== window.__단추틀){
+      window.__단추틀 = document.createElement('div');
+      window.__단추틀.className = '돌테 주황';
+      window.__단추틀.style.margin = '12px 0 0';
+      창칸.parentElement.insertBefore(window.__단추틀, 창칸.nextSibling);
+      window.__단추틀.appendChild(a);
+    }
+    if(window.__단추틀) window.__단추틀.style.display = '';
+    ['순서안내틀','직접다음','직접다음설명','새창안내','그래도'].forEach(function(id){
+      var e = $(id); if(e) e.style.display = 'none';
+    });
     a.style.display = '';
     a.classList.add('돋보임');
     a.textContent = 칸.단추글 || (끝인가 ? '진료내역 확인하러 가기' : '가입한 보험 불러오러 가기');
