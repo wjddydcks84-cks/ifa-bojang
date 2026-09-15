@@ -1132,6 +1132,7 @@ function 돌아왔다(){
   clearInterval(돌아옴감시.타이머);
   window.removeEventListener('visibilitychange', 돌아옴감시.보임);
   window.removeEventListener('visibilitychange', 돌아옴감시.떠남);
+  window.removeEventListener('blur', 돌아옴감시.뒤로);
   window.removeEventListener('focus', 돌아옴감시.돌아옴);
   window.removeEventListener('pageshow', 돌아옴감시.돌아옴);
   돌아옴감시 = null;
@@ -1152,11 +1153,23 @@ function 돌아오면다음(주소){
   if(돌아옴감시){ clearInterval(돌아옴감시.타이머); }
   /* ★ 2026-09-15 — 단추를 누른 **직후**에도 focus 가 한 번 뜬다.
      그걸 「돌아왔다」로 읽으면 감시가 바로 꺼져, 진짜 돌아왔을 때 아무 일도 안 일어난다.
-     그래서 ①한 번은 화면을 **떠난 것**을 본 뒤에야 ②돌아온 것을 인정한다. */
+     그래서 ①한 번은 화면을 **떠난 것**을 본 뒤에야 ②돌아온 것을 인정한다.
+
+     ★★ 2026-09-15 저녁 — 그 「떠났나」를 hidden 으로만 잡은 것이 고장이었다.
+     새 **창**이 앞에 와도 원래 탭은 hidden 이 되지 않는다 (탭이 바뀐 게 아니라 창이 바뀐 것이다).
+     그래서 떠났나가 영영 false 로 남아 focus·visibilitychange 를 **전부 무시**했다.
+     → 손님이 메리츠를 마치고 돌아와도 안내가 「새 창에서 진행해 주세요」 그대로였다.
+       (정용찬님 「메리츠 끝나면 진료내역으로 안 넘어간다」. 크롬에서 그대로 재현해 확인)
+     이제 떠난 것을 **둘**로 잡는다 — ① 화면이 가려짐(hidden) ② 이 창이 뒤로 감(blur).
+     새 창이 열리면 폼 창에는 blur 가 반드시 오고 돌아올 때 focus 가 온다 → 순서가 보장된다.
+     「누른 직후 focus」 오작동은 **연 지 2.5초 안에는 안 받는 것**으로 따로 막는다. */
   var 떠났나 = false;
+  var 연때 = Date.now();
+  var 이른가 = function(){ return (Date.now() - 연때) < 2500; };
   var 떠남 = function(){ if(document.visibilityState === 'hidden') 떠났나 = true; };
-  var 보임 = function(){ if(document.visibilityState === 'visible' && 떠났나) 돌아왔다(); };
-  var 돌아옴 = function(){ if(떠났나) 돌아왔다(); };
+  var 뒤로 = function(){ 떠났나 = true; };          /* blur = 새 창이 앞에 왔다 */
+  var 보임 = function(){ if(document.visibilityState === 'visible' && 떠났나 && !이른가()) 돌아왔다(); };
+  var 돌아옴 = function(){ if(떠났나 && !이른가()) 돌아왔다(); };
   var n = 0;
   var 타이머 = setInterval(function(){
     n++;
@@ -1164,9 +1177,10 @@ function 돌아오면다음(주소){
     try{ 닫힘 = !!(연창 && 연창.closed); }catch(e){ 닫힘 = false; }
     if(닫힘 || n > 900) 돌아왔다();              /* 창이 닫히면 떠난 적 없어도 인정 */
   }, 1000);
-  돌아옴감시 = {타이머: 타이머, 보임: 보임, 떠남: 떠남, 돌아옴: 돌아옴};
+  돌아옴감시 = {타이머: 타이머, 보임: 보임, 떠남: 떠남, 돌아옴: 돌아옴, 뒤로: 뒤로};
   window.addEventListener('visibilitychange', 떠남);
   window.addEventListener('visibilitychange', 보임);
+  window.addEventListener('blur', 뒤로);
   window.addEventListener('focus', 돌아옴);
   window.addEventListener('pageshow', 돌아옴);
   if($('막힘글')) $('막힘글').innerHTML =
@@ -1188,6 +1202,7 @@ function 창문그리기(){
     clearInterval(돌아옴감시.타이머);
     window.removeEventListener('visibilitychange', 돌아옴감시.보임);
     window.removeEventListener('visibilitychange', 돌아옴감시.떠남);
+    window.removeEventListener('blur', 돌아옴감시.뒤로);
     window.removeEventListener('focus', 돌아옴감시.돌아옴);
     window.removeEventListener('pageshow', 돌아옴감시.돌아옴);
     돌아옴감시 = null;
